@@ -1,5 +1,6 @@
 import prisma from "./prisma";
 import { Prize } from "@prisma/client";
+import { sendPrizeEmail } from "./email";
 
 export type SpinResult = {
   prize: Prize;
@@ -67,6 +68,15 @@ export class RouletteEngine {
         where: { id: leadId },
         data: { wonPrizeId: selectedPrize.id },
       });
+
+      // 7. Send Prize Email (if not a "No Prize" segment)
+      if (!selectedPrize.isNoPrize) {
+        try {
+          await sendPrizeEmail(lead.email, selectedPrize.name, selectedPrize.code);
+        } catch (emailError) {
+          console.error("Failed to send prize email, but win recorded:", emailError);
+        }
+      }
 
       return {
         prize: selectedPrize,

@@ -34,7 +34,7 @@ describe("RouletteEngine", () => {
   it("should select a prize based on weights", async () => {
     // Mock lead existence
     (prisma.lead.findUnique as any).mockResolvedValue(mockLead);
-    
+
     // Mock eligible prizes
     (prisma.prize.findMany as any).mockResolvedValue(mockPrizes);
 
@@ -59,11 +59,11 @@ describe("RouletteEngine", () => {
 
   it("should decrement stock for winning prizes", async () => {
     (prisma.lead.findUnique as any).mockResolvedValue(mockLead);
-    
+
     // Only one winning prize
     const winningPrize = mockPrizes[0];
     (prisma.prize.findMany as any).mockResolvedValue([winningPrize]);
-    
+
     (prisma.$transaction as any).mockImplementation(async (cb) => {
       return cb(prisma);
     });
@@ -80,11 +80,11 @@ describe("RouletteEngine", () => {
 
   it("should NOT decrement stock for No Prize segments", async () => {
     (prisma.lead.findUnique as any).mockResolvedValue(mockLead);
-    
+
     // Only No Prize
     const noPrize = mockPrizes[2];
     (prisma.prize.findMany as any).mockResolvedValue([noPrize]);
-    
+
     (prisma.$transaction as any).mockImplementation(async (cb) => {
       return cb(prisma);
     });
@@ -97,7 +97,7 @@ describe("RouletteEngine", () => {
   it("should throw error if no prizes are available", async () => {
     (prisma.lead.findUnique as any).mockResolvedValue(mockLead);
     (prisma.prize.findMany as any).mockResolvedValue([]);
-    
+
     (prisma.$transaction as any).mockImplementation(async (cb) => {
       return cb(prisma);
     });
