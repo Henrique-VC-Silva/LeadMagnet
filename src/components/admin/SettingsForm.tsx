@@ -56,16 +56,64 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </section>
 
-        {/* Branding Section (Placeholder for future customization) */}
+        {/* Branding Section */}
         <section className="pt-8 border-t border-border">
           <div className="flex items-center gap-2 mb-4 text-primary">
             <Palette className="h-5 w-5" />
             <h3 className="font-bold">Branding & Theme</h3>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
-            Theme customization is currently managed via <code>globals.css</code>. 
-            Visual settings will be available here in a future update.
-          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1">Primary Color (Accent)</label>
+              <div className="flex gap-2">
+                <input
+                  type="color"
+                  value={settings["theme_primary_color"] || "#c5a059"}
+                  onChange={(e) => setSettings({ ...settings, theme_primary_color: e.target.value })}
+                  className="h-10 w-10 border border-border rounded cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={settings["theme_primary_color"] || "#c5a059"}
+                  onChange={(e) => setSettings({ ...settings, theme_primary_color: e.target.value })}
+                  className="flex-1 px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Secondary Color (Backgrounds)</label>
+              <div className="flex gap-2">
+                <input
+                  type="color"
+                  value={settings["theme_secondary_color"] || "#f1f1f1"}
+                  onChange={(e) => setSettings({ ...settings, theme_secondary_color: e.target.value })}
+                  className="h-10 w-10 border border-border rounded cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={settings["theme_secondary_color"] || "#f1f1f1"}
+                  onChange={(e) => setSettings({ ...settings, theme_secondary_color: e.target.value })}
+                  className="flex-1 px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">Font Family</label>
+              <select
+                value={settings["theme_font_family"] || "system-ui"}
+                onChange={(e) => setSettings({ ...settings, theme_font_family: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+              >
+                <option value="system-ui">System Default (Sans)</option>
+                <option value="'Inter', sans-serif">Inter (Modern)</option>
+                <option value="'Playfair Display', serif">Playfair Display (Premium Serif)</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+              </select>
+            </div>
+          </div>
         </section>
       </div>
 

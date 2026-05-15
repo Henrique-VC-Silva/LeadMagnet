@@ -37,3 +37,34 @@ export async function saveSettings(data: Record<string, string>) {
   revalidatePath("/admin/settings");
   return { success: true };
 }
+
+export type ThemeConfig = {
+  primary_color: string;
+  secondary_color: string;
+  font_family: string;
+};
+
+export const DEFAULT_THEME: ThemeConfig = {
+  primary_color: "#c5a059",
+  secondary_color: "#f1f1f1",
+  font_family: "system-ui",
+};
+
+export async function getThemeSettings(): Promise<ThemeConfig> {
+  const settings = await prisma.setting.findMany({
+    where: {
+      key: { startsWith: "theme_" }
+    }
+  });
+
+  const config = { ...DEFAULT_THEME };
+  
+  settings.forEach(s => {
+    const key = s.key.replace("theme_", "") as keyof ThemeConfig;
+    if (key in config) {
+      (config as any)[key] = s.value;
+    }
+  });
+
+  return config;
+}
