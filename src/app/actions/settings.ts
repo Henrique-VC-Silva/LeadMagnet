@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
+import { ThemeConfig, DEFAULT_THEME } from "../../lib/theme";
 
 async function ensureAdmin() {
   const session = await getServerSession(authOptions);
@@ -37,18 +38,6 @@ export async function saveSettings(data: Record<string, string>) {
   revalidatePath("/admin/settings");
   return { success: true };
 }
-
-export type ThemeConfig = {
-  primary_color: string;
-  secondary_color: string;
-  font_family: string;
-};
-
-export const DEFAULT_THEME: ThemeConfig = {
-  primary_color: "#c5a059",
-  secondary_color: "#f1f1f1",
-  font_family: "system-ui",
-};
 
 export async function getThemeSettings(): Promise<ThemeConfig> {
   const settings = await prisma.setting.findMany({

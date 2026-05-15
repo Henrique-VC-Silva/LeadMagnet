@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateThemeStyles } from "../theme";
-import { ThemeConfig } from "@/app/actions/settings";
+import { generateThemeStyles, ThemeConfig } from "../theme";
 
 describe("Theme Utilities - Style Generation", () => {
   it("should generate a valid CSS variable string from config", () => {

@@ -50,6 +50,7 @@ describe("Settings Actions - Persistence", () => {
 });
 
 import { getThemeSettings } from "../settings";
+import { DEFAULT_THEME } from "../../../lib/theme";
 
 describe("Settings Actions - Theme Retrieval", () => {
   beforeEach(() => {
@@ -62,8 +63,8 @@ describe("Settings Actions - Theme Retrieval", () => {
 
     const theme = await getThemeSettings();
 
-    expect(theme.primary_color).toBe("#c5a059"); // Default gold
-    expect(theme.font_family).toBe("system-ui"); // Default font
+    expect(theme.primary_color).toBe(DEFAULT_THEME.primary_color); 
+    expect(theme.font_family).toBe(DEFAULT_THEME.font_family); 
   });
 
   it("should return database values when they exist", async () => {

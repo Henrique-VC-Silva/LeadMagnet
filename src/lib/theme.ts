@@ -1,4 +1,18 @@
-import { ThemeConfig } from "@/app/actions/settings";
+/**
+ * Theme configuration and utilities
+ */
+
+export type ThemeConfig = {
+  primary_color: string;
+  secondary_color: string;
+  font_family: string;
+};
+
+export const DEFAULT_THEME: ThemeConfig = {
+  primary_color: "#c5a059",
+  secondary_color: "#f1f1f1",
+  font_family: "system-ui",
+};
 
 /**
  * Converts a ThemeConfig object into a string of CSS variable definitions.
