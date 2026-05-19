@@ -28,3 +28,57 @@ body {
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* Permanent Professional Dark Theme for the Admin Panel */
+.admin-dashboard {
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --primary: #10b981; /* Premium Emerald green */
+  --primary-foreground: #ffffff;
+  --secondary: #121a2e; /* Slate/Navy blend */
+  --border: #1e293b;
+  --radius: 0.75rem;
+
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+/* Force light components to become rich dark cards */
+.admin-dashboard .bg-white {
+  background-color: #111827 !important; /* Gray-900 */
+}
+
+.admin-dashboard .border-border {
+  border-color: #1f2937 !important; /* Gray-800 */
+}
+
+.admin-dashboard .hover\:bg-secondary\/20:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Inputs and Forms override in Dark Theme */
+.admin-dashboard input[type="text"],
+.admin-dashboard input[type="number"],
+.admin-dashboard input[type="url"],
+.admin-dashboard select {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+.admin-dashboard input[type="text"]:focus,
+.admin-dashboard input[type="number"]:focus,
+.admin-dashboard input[type="url"]:focus,
+.admin-dashboard select:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+}
+
+/* Badges styling */
+.admin-dashboard .bg-green-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+.admin-dashboard .text-green-700 {
+  color: #34d399 !important;
+}
