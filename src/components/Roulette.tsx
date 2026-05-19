@@ -98,11 +98,11 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
               
               const pathData = `M 50 50 L ${x1} ${y1} A 50 50 0 0 1 ${x2} ${y2} Z`;
               
-              return (
+               return (
                 <g key={i}>
                   <path
                     d={pathData}
-                    fill={i % 2 === 0 ? "white" : "#fbfbfb"}
+                    fill={prize.isNoPrize ? "#e2e8f0" : (i % 2 === 0 ? "var(--primary)" : "var(--secondary)")}
                     stroke="#f0f0f0"
                     strokeWidth="0.2"
                   />
@@ -114,7 +114,7 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
                       y="50"
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fill={prize.isNoPrize ? "#94a3b8" : "#1a1a1a"}
+                      fill={prize.isNoPrize ? "#64748b" : "white"}
                       style={{ 
                         fontSize: "2.8px", 
                         fontWeight: "800",
