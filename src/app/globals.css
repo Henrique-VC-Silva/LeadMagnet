@@ -60,6 +60,7 @@ body {
 .admin-dashboard input[type="text"],
 .admin-dashboard input[type="number"],
 .admin-dashboard input[type="url"],
+.admin-dashboard input[type="password"],
 .admin-dashboard select {
   background-color: #1f2937 !important;
   border-color: #374151 !important;
@@ -69,6 +70,7 @@ body {
 .admin-dashboard input[type="text"]:focus,
 .admin-dashboard input[type="number"]:focus,
 .admin-dashboard input[type="url"]:focus,
+.admin-dashboard input[type="password"]:focus,
 .admin-dashboard select:focus {
   outline: none !important;
   border-color: var(--primary) !important;
