@@ -29,6 +29,8 @@ vi.mock("@/components/GameContainer", () => ({
   ),
 }));
 
+import { renderToStaticMarkup } from "react-dom/server";
+
 describe("Campaign Page - Dynamic Rendering", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -56,15 +58,15 @@ describe("Campaign Page - Dynamic Rendering", () => {
     // Assert getCampaignBySlug WAS called
     expect(getCampaignBySlug).toHaveBeenCalledWith("black-friday");
 
-    // Inspect JSX tree
-    const json = JSON.stringify(result);
+    // Inspect HTML output
+    const html = renderToStaticMarkup(result);
 
-    // Verify only in-stock or isNoPrize prizes are passed (p1 and p3, not p2!)
-    expect(json).toContain("BF Prize 1");
-    expect(json).not.toContain("BF Prize 2 (No Stock)");
-    expect(json).toContain("BF No Prize");
+    // Verify only in-stock or isNoPrize prizes are passed
+    expect(html).toContain("BF Prize 1");
+    expect(html).not.toContain("BF Prize 2 (No Stock)");
+    expect(html).toContain("BF No Prize");
 
     // Verify campaign title
-    expect(json).toContain("Global Title");
+    expect(html).toContain("Global Title");
   });
 });

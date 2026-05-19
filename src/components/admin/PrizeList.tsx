@@ -16,9 +16,10 @@ import {
 
 interface PrizeListProps {
   initialPrizes: Prize[];
+  campaignId?: string;
 }
 
-export default function PrizeList({ initialPrizes }: PrizeListProps) {
+export default function PrizeList({ initialPrizes, campaignId }: PrizeListProps) {
   const [prizes, setPrizes] = useState<Prize[]>(initialPrizes);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPrize, setEditingPrize] = useState<Prize | null>(null);
@@ -120,6 +121,7 @@ export default function PrizeList({ initialPrizes }: PrizeListProps) {
       {isFormOpen && (
         <PrizeForm 
           prize={editingPrize} 
+          campaignId={campaignId}
           onSuccess={handleFormSuccess} 
           onCancel={() => setIsFormOpen(false)} 
         />

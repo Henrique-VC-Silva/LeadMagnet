@@ -7,11 +7,12 @@ import { Loader2, X } from "lucide-react";
 
 interface PrizeFormProps {
   prize: Prize | null;
+  campaignId?: string;
   onSuccess: (prize: Prize) => void;
   onCancel: () => void;
 }
 
-export default function PrizeForm({ prize, onSuccess, onCancel }: PrizeFormProps) {
+export default function PrizeForm({ prize, campaignId, onSuccess, onCancel }: PrizeFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: prize?.name || "",
@@ -19,6 +20,7 @@ export default function PrizeForm({ prize, onSuccess, onCancel }: PrizeFormProps
     stock: prize?.stock || 0,
     code: prize?.code || "",
     isNoPrize: prize?.isNoPrize || false,
+    campaignId: prize?.campaignId || campaignId || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

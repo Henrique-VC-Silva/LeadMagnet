@@ -25,10 +25,11 @@ export async function createPrize(data: {
   stock: number;
   code?: string;
   isNoPrize?: boolean;
+  campaignId?: string;
 }) {
   await ensureAdmin();
   const prize = await prisma.prize.create({ data });
-  revalidatePath("/admin/prizes");
+  revalidatePath("/admin");
   return prize;
 }
 
@@ -40,6 +41,7 @@ export async function updatePrize(
     stock: number;
     code: string;
     isNoPrize: boolean;
+    campaignId: string;
   }>
 ) {
   await ensureAdmin();
@@ -47,12 +49,12 @@ export async function updatePrize(
     where: { id },
     data,
   });
-  revalidatePath("/admin/prizes");
+  revalidatePath("/admin");
   return prize;
 }
 
 export async function deletePrize(id: string) {
   await ensureAdmin();
   await prisma.prize.delete({ where: { id } });
-  revalidatePath("/admin/prizes");
+  revalidatePath("/admin");
 }

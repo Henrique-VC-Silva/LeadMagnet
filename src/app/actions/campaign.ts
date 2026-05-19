@@ -48,3 +48,21 @@ export async function getCampaignBySlug(slug: string) {
     },
   });
 }
+
+export async function updateCampaign(
+  id: string,
+  data: {
+    name: string;
+    slug: string;
+    primaryColor: string;
+    secondaryColor: string;
+  }
+) {
+  await ensureAdmin();
+  const campaign = await prisma.campaign.update({
+    where: { id },
+    data,
+  });
+  revalidatePath("/admin");
+  return campaign;
+}
