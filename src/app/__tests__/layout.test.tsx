@@ -50,3 +50,39 @@ describe("PublicLayout - Load Dynamic Stylesheets", () => {
     expect(JSON.stringify(result)).toContain("style");
   });
 });
+
+import PublicCampaignLayout from "../(public)/[slug]/layout";
+import { getCampaignBySlug } from "../actions/campaign";
+
+// Mock campaign actions
+vi.mock("../actions/campaign", () => ({
+  getCampaignBySlug: vi.fn().mockResolvedValue({
+    id: "1",
+    name: "Summer Campaign",
+    slug: "summer",
+    primaryColor: "#ab12cd",
+    secondaryColor: "#78ef34",
+  }),
+}));
+
+describe("PublicCampaignLayout - Load Dynamic Campaign Stylesheets", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should fetch campaign details and inject custom colors", async () => {
+    // Render the Server Component directly
+    const result = await PublicCampaignLayout({
+      children: <div>Test Campaign Child</div>,
+      params: Promise.resolve({ slug: "summer" }),
+    });
+
+    // Assert getCampaignBySlug WAS called with correct slug
+    expect(getCampaignBySlug).toHaveBeenCalledWith("summer");
+
+    // Assert custom primary and secondary colors are injected in style tag
+    const json = JSON.stringify(result);
+    expect(json).toContain("#ab12cd");
+    expect(json).toContain("#78ef34");
+  });
+});
