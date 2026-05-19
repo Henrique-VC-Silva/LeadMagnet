@@ -11,6 +11,7 @@ model Lead {
   email       String
   name        String?
   phone       String?
+  campaign    String?
   consent     Boolean  @default(false)
   consentAt   DateTime @default(now())
   wonPrizeId  String?

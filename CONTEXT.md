@@ -33,3 +33,9 @@ A configurable rule that determines the maximum duration a Lead's data is stored
 
 ### Admin
 A user account with privileged access to the management dashboard, allowed to configure Prizes, view/export Leads, and set the Retention Policy.
+
+### Copy
+Dynamic text elements (e.g., title, subtitle, button text) stored in the database, allowing Admins to rewrite the interface for different campaigns without code changes.
+
+### Campaign
+A reference tag attached to a Lead to identify which specific marketing effort or version of the Roulette they engaged with.

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { leadSchema, LeadInput } from "@/lib/validations";
 import { createLead } from "@/app/actions/lead";
@@ -9,19 +10,29 @@ import { Loader2 } from "lucide-react";
 
 interface LeadFormProps {
   onSuccess: (leadId: string) => void;
+  buttonText?: string;
 }
 
-export default function LeadForm({ onSuccess }: LeadFormProps) {
+export default function LeadForm({ onSuccess, buttonText }: LeadFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const searchParams = useSearchParams();
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LeadInput>({
     resolver: zodResolver(leadSchema),
   });
+
+  useEffect(() => {
+    const campaign = searchParams.get("campaign");
+    if (campaign) {
+      setValue("campaign", campaign);
+    }
+  }, [searchParams, setValue]);
 
   const onSubmit = async (data: LeadInput) => {
     setIsPending(true);
@@ -105,7 +116,7 @@ export default function LeadForm({ onSuccess }: LeadFormProps) {
           className="w-full py-3 px-4 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          Continue to Spin
+          {buttonText || "Continue to Spin"}
         </button>
       </form>
     </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { saveSettings } from "@/app/actions/settings";
-import { Loader2, ShieldCheck, Palette, Save } from "lucide-react";
+import { Loader2, ShieldCheck, Palette, Save, Type, ImageIcon } from "lucide-react";
 
 interface SettingsFormProps {
   initialSettings: Record<string, string>;
@@ -112,6 +112,79 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
                 <option value="'Playfair Display', serif">Playfair Display (Premium Serif)</option>
                 <option value="'Roboto', sans-serif">Roboto</option>
               </select>
+            </div>
+          </div>
+        </section>
+
+        {/* Copy & Campaign Section */}
+        <section className="pt-8 border-t border-border">
+          <div className="flex items-center gap-2 mb-4 text-primary">
+            <Type className="h-5 w-5" />
+            <h3 className="font-bold">Campaign Text (i18n)</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">Headline</label>
+              <input
+                type="text"
+                value={settings["copy_title"] || "Spin to Win Your Exclusive Prize"}
+                onChange={(e) => setSettings({ ...settings, copy_title: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">Subtitle</label>
+              <input
+                type="text"
+                value={settings["copy_subtitle"] || "Join our community and try your luck. Everyone wins something!"}
+                onChange={(e) => setSettings({ ...settings, copy_subtitle: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Form Button Text</label>
+              <input
+                type="text"
+                value={settings["copy_button"] || "Continue to Spin"}
+                onChange={(e) => setSettings({ ...settings, copy_button: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Media & Mascots Section */}
+        <section className="pt-8 border-t border-border">
+          <div className="flex items-center gap-2 mb-4 text-primary">
+            <ImageIcon className="h-5 w-5" />
+            <h3 className="font-bold">Mascots & Imagery</h3>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Mascot Image URL</label>
+              <input
+                type="url"
+                placeholder="https://example.com/mascot.png"
+                value={settings["image_mascot"] || ""}
+                onChange={(e) => setSettings({ ...settings, image_mascot: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Leave empty to hide the mascot.</p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Logo Image URL</label>
+              <input
+                type="url"
+                placeholder="https://example.com/logo.png"
+                value={settings["image_logo"] || ""}
+                onChange={(e) => setSettings({ ...settings, image_logo: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50"
+              />
             </div>
           </div>
         </section>

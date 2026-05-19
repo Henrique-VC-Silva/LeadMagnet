@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import LeadForm from "./LeadForm";
 import Roulette from "./Roulette";
 import { Prize } from "@prisma/client";
@@ -8,7 +8,13 @@ import { spinAction } from "@/app/actions/spin";
 import { motion, AnimatePresence } from "framer-motion";
 import { PartyPopper, RefreshCw } from "lucide-react";
 
-export default function GameContainer({ initialPrizes }: { initialPrizes: Prize[] }) {
+export default function GameContainer({ 
+  initialPrizes, 
+  buttonText 
+}: { 
+  initialPrizes: Prize[], 
+  buttonText?: string 
+}) {
   const [step, setStep] = useState<"form" | "spin" | "result">("form");
   const [leadId, setLeadId] = useState<string | null>(null);
   const [winningPrize, setWinningPrize] = useState<Prize | null>(null);
@@ -43,7 +49,9 @@ export default function GameContainer({ initialPrizes }: { initialPrizes: Prize[
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <LeadForm onSuccess={handleLeadSuccess} />
+            <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading form...</div>}>
+              <LeadForm onSuccess={handleLeadSuccess} buttonText={buttonText} />
+            </Suspense>
           </motion.div>
         )}
 

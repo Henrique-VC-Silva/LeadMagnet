@@ -9,9 +9,9 @@ export type ThemeConfig = {
 };
 
 export const DEFAULT_THEME: ThemeConfig = {
-  primary_color: "#c5a059",
-  secondary_color: "#f1f1f1",
-  font_family: "system-ui",
+  primary_color: "#ff6b6b", // BusinessKids Red/Pink
+  secondary_color: "#4ecdc4", // BusinessKids Teal
+  font_family: "'Outfit', system-ui, sans-serif", // Playful modern font
 };
 
 /**

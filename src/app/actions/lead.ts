@@ -16,6 +16,7 @@ export async function createLead(input: LeadInput) {
         email: result.data.email,
         name: result.data.name || null,
         phone: result.data.phone || null,
+        campaign: result.data.campaign || null,
         consent: result.data.consent,
         consentAt: new Date(),
       },
