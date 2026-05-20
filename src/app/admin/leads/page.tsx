@@ -15,10 +15,13 @@ export default async function LeadsPage() {
           <h1 className="text-3xl font-bold">Captured Leads</h1>
         </div>
         
-        {/* Simplified export - in a real app this would be a separate endpoint or client action */}
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90">
+        <a
+          href="/api/admin/leads/export"
+          download="leads_export.csv"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 shadow-sm transition-all"
+        >
           <Download className="h-4 w-4" /> Export CSV
-        </button>
+        </a>
       </header>
 
       <div className="bg-white border border-border rounded-xl overflow-hidden shadow-sm">
