@@ -20,6 +20,7 @@ export default function CampaignDetailsTabs({ campaign: initialCampaign }: Campa
     slug: campaign.slug,
     primaryColor: campaign.primaryColor,
     secondaryColor: campaign.secondaryColor,
+    backgroundImage: campaign.backgroundImage || "",
   });
   const router = useRouter();
 
@@ -82,7 +83,7 @@ export default function CampaignDetailsTabs({ campaign: initialCampaign }: Campa
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-white"
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-white bg-transparent"
               />
             </div>
 
@@ -98,6 +99,18 @@ export default function CampaignDetailsTabs({ campaign: initialCampaign }: Campa
                   className="flex-1 px-4 py-2 outline-none text-white bg-transparent"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Background Image URL (Optional)</label>
+              <input
+                type="url"
+                value={formData.backgroundImage}
+                onChange={(e) => setFormData({ ...formData, backgroundImage: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-white bg-transparent"
+                placeholder="https://example.com/premium-background.jpg"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Provide a public image URL to set custom page background.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-6 pt-4 border-t border-border">

@@ -17,6 +17,7 @@ export async function createCampaign(data: {
   slug: string;
   primaryColor?: string;
   secondaryColor?: string;
+  backgroundImage?: string;
 }) {
   await ensureAdmin();
   const campaign = await prisma.campaign.create({
@@ -25,6 +26,7 @@ export async function createCampaign(data: {
       slug: data.slug,
       primaryColor: data.primaryColor ?? "#c5a059",
       secondaryColor: data.secondaryColor ?? "#f1f1f1",
+      backgroundImage: data.backgroundImage || null,
     },
   });
   revalidatePath("/admin");
@@ -56,12 +58,19 @@ export async function updateCampaign(
     slug: string;
     primaryColor: string;
     secondaryColor: string;
+    backgroundImage?: string;
   }
 ) {
   await ensureAdmin();
   const campaign = await prisma.campaign.update({
     where: { id },
-    data,
+    data: {
+      name: data.name,
+      slug: data.slug,
+      primaryColor: data.primaryColor,
+      secondaryColor: data.secondaryColor,
+      backgroundImage: data.backgroundImage || null,
+    },
   });
   revalidatePath("/admin");
   return campaign;

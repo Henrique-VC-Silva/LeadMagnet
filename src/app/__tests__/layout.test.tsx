@@ -85,4 +85,24 @@ describe("PublicCampaignLayout - Load Dynamic Campaign Stylesheets", () => {
     expect(json).toContain("#ab12cd");
     expect(json).toContain("#78ef34");
   });
+
+  it("should inject background-image when campaign has backgroundImage set", async () => {
+    (getCampaignBySlug as any).mockResolvedValueOnce({
+      id: "2",
+      name: "Image Campaign",
+      slug: "with-bg",
+      primaryColor: "#111111",
+      secondaryColor: "#222222",
+      backgroundImage: "https://example.com/custom-bg.png",
+    });
+
+    const result = await PublicCampaignLayout({
+      children: <div>With BG</div>,
+      params: Promise.resolve({ slug: "with-bg" }),
+    });
+
+    const json = JSON.stringify(result);
+    expect(json).toContain("background-image:");
+    expect(json).toContain("https://example.com/custom-bg.png");
+  });
 });

@@ -17,6 +17,7 @@ export default function CreateCampaignForm({ onSuccess, onCancel }: CreateCampai
     slug: "",
     primaryColor: "#10b981",
     secondaryColor: "#1e293b",
+    backgroundImage: "",
   });
 
   const handleNameChange = (name: string) => {
@@ -81,6 +82,17 @@ export default function CreateCampaignForm({ onSuccess, onCancel }: CreateCampai
                 placeholder="summer-promo-2026"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Background Image URL (Optional)</label>
+            <input
+              type="url"
+              value={formData.backgroundImage}
+              onChange={(e) => setFormData({ ...formData, backgroundImage: e.target.value })}
+              className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-black"
+              placeholder="https://example.com/premium-background.jpg"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

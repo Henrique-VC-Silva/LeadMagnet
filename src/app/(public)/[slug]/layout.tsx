@@ -20,6 +20,19 @@ export default async function PublicCampaignLayout({
       --primary: ${campaign.primaryColor};
       --secondary: ${campaign.secondaryColor};
     }
+    ${
+      campaign.backgroundImage
+        ? `
+        body {
+          background-image: url('${campaign.backgroundImage}') !important;
+          background-size: cover !important;
+          background-position: center !important;
+          background-repeat: no-repeat !important;
+          background-attachment: fixed !important;
+        }
+        `
+        : ""
+    }
   `;
 
   return (

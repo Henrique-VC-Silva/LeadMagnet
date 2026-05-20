@@ -52,6 +52,33 @@ describe("Campaign Actions - CRUD", () => {
         slug: "black-friday",
         primaryColor: "#ff0000",
         secondaryColor: "#000000",
+        backgroundImage: null,
+      },
+    });
+    expect(result).toEqual(mockCampaign);
+  });
+
+  it("should create campaign correctly with background image", async () => {
+    const data = {
+      name: "Black Friday Roulette",
+      slug: "black-friday",
+      primaryColor: "#ff0000",
+      secondaryColor: "#000000",
+      backgroundImage: "https://example.com/bg.jpg",
+    };
+
+    const mockCampaign = { id: "camp_1", ...data, createdAt: new Date(), updatedAt: new Date() };
+    (prisma.campaign.create as any).mockResolvedValue(mockCampaign);
+
+    const result = await createCampaign(data);
+
+    expect(prisma.campaign.create).toHaveBeenCalledWith({
+      data: {
+        name: "Black Friday Roulette",
+        slug: "black-friday",
+        primaryColor: "#ff0000",
+        secondaryColor: "#000000",
+        backgroundImage: "https://example.com/bg.jpg",
       },
     });
     expect(result).toEqual(mockCampaign);
