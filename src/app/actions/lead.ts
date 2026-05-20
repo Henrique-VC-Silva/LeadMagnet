@@ -11,12 +11,22 @@ export async function createLead(input: LeadInput) {
   }
 
   try {
+    let campaignId: string | null = null;
+    if (result.data.campaign) {
+      const campaign = await prisma.campaign.findUnique({
+        where: { slug: result.data.campaign },
+      });
+      if (campaign) {
+        campaignId = campaign.id;
+      }
+    }
+
     const lead = await prisma.lead.create({
       data: {
         email: result.data.email,
         name: result.data.name || null,
         phone: result.data.phone || null,
-        campaign: result.data.campaign || null,
+        campaignId,
         consent: result.data.consent,
         consentAt: new Date(),
       },
