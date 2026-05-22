@@ -1,13 +1,8 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
-  const prisma = new PrismaClient({ adapter });
+  const prisma = new PrismaClient();
 
   console.log('Seeding prizes...');
 
@@ -20,11 +15,16 @@ async function main() {
     { name: 'Free Consultation', weight: 2, stock: 5, code: 'CONSULT', isNoPrize: false },
   ];
 
+  // Clear existing prizes
+  await prisma.prize.deleteMany({});
+  console.log('Cleared existing prizes');
+
   for (const prize of prizes) {
     await prisma.prize.create({ data: prize });
   }
 
   console.log('Seed complete!');
+  await prisma.$disconnect();
 }
 
 main().catch((e) => {

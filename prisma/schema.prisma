@@ -3,59 +3,63 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model Campaign {
-  id             String   @id @default(cuid())
-  name           String
-  slug           String   @unique
-  primaryColor   String   @default("#c5a059")
-  secondaryColor String   @default("#f1f1f1")
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  slug            String   @unique
+  primaryColor    String   @default("#c5a059")
+  secondaryColor  String   @default("#f1f1f1")
   backgroundImage String?
   logo            String?
   copyTitle       String?
   copySubtitle    String?
   copyButton      String?
   isActive        Boolean  @default(true)
-  prizes         Prize[]
-  leads          Lead[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  prizes          Prize[]  @relation("CampaignPrizes")
+  leads           Lead[]   @relation("CampaignLeads")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Lead {
-  id          String    @id @default(cuid())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   email       String
   name        String?
   phone       String?
-  campaignId  String?
-  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  campaignId  String?   @db.ObjectId
+  campaign    Campaign? @relation("CampaignLeads", fields: [campaignId], references: [id], onDelete: SetNull)
   consent     Boolean   @default(false)
   consentAt   DateTime  @default(now())
-  wonPrizeId  String?
-  wonPrize    Prize?    @relation(fields: [wonPrizeId], references: [id])
+  wonPrizeId  String?   @db.ObjectId
+  wonPrize    Prize?    @relation("PrizeLeads", fields: [wonPrizeId], references: [id], onDelete: SetNull)
   createdAt   DateTime  @default(now())
 
   @@index([email])
+  @@index([campaignId])
 }
 
 model Prize {
-  id          String    @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  weight      Int       @default(1)
-  stock       Int       @default(0)
+  weight      Int      @default(1)
+  stock       Int      @default(0)
   code        String?
-  isNoPrize   Boolean   @default(false)
-  campaignId  String?
-  campaign    Campaign? @relation(fields: [campaignId], references: [id])
-  leads       Lead[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  isNoPrize   Boolean  @default(false)
+  campaignId  String?  @db.ObjectId
+  campaign    Campaign? @relation("CampaignPrizes", fields: [campaignId], references: [id], onDelete: SetNull)
+  leads       Lead[]   @relation("PrizeLeads")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([campaignId])
 }
 
 model Setting {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   key       String   @unique
   value     String
   createdAt DateTime @default(now())

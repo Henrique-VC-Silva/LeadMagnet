@@ -1,16 +1,18 @@
 services:
   db:
-    image: postgres:15-alpine
+    image: mongo:7-alpine
     container_name: leadmagnet-db
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=leadmagnet
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+      - MONGO_INITDB_DATABASE=leadmagnet
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
 
 volumes:
-  postgres_data:
+  mongodb_data:
+  mongodb_config:
