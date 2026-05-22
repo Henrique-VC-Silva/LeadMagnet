@@ -10,10 +10,12 @@ import { PartyPopper, RefreshCw } from "lucide-react";
 
 export default function GameContainer({ 
   initialPrizes, 
-  buttonText 
+  buttonText,
+  copySuccess
 }: { 
   initialPrizes: Prize[], 
-  buttonText?: string 
+  buttonText?: string,
+  copySuccess?: string
 }) {
   const [step, setStep] = useState<"form" | "spin" | "result">("form");
   const [leadId, setLeadId] = useState<string | null>(null);
@@ -67,7 +69,6 @@ export default function GameContainer({
               winningPrize={winningPrize} 
               onFinish={handleSpinFinish} 
             />
-            <p className="text-xl font-medium animate-pulse">Spinning for your prize...</p>
           </motion.div>
         )}
 
@@ -76,7 +77,7 @@ export default function GameContainer({
             key="result"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md p-8 bg-white border-2 border-primary/20 shadow-xl rounded-2xl text-center"
+            className="w-full max-w-md p-5 sm:p-8 bg-white/90 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl text-center"
           >
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <PartyPopper className="h-8 w-8 text-primary" />
@@ -90,7 +91,7 @@ export default function GameContainer({
                 </p>
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-2 mx-auto px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90"
+                  className="flex items-center gap-2 mx-auto px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 cursor-pointer"
                 >
                   <RefreshCw className="h-4 w-4" /> Try Again
                 </button>
@@ -107,7 +108,7 @@ export default function GameContainer({
                   <p className="text-xl font-mono font-bold tracking-tighter">{winningPrize.code}</p>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Check your email! We've sent your prize details to you.
+                  {copySuccess || "Check your email! We've sent your prize details to you."}
                 </p>
               </>
             )}

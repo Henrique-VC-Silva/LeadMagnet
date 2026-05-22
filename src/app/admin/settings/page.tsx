@@ -1,7 +1,6 @@
 import { getSettings } from "@/app/actions/settings";
 import SettingsForm from "@/components/admin/SettingsForm";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-material";
 import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
 
 export default async function AdminSettingsPage() {

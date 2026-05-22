@@ -18,6 +18,9 @@ vi.mock("@/lib/prisma", () => ({
     lead: {
       findMany: vi.fn(),
     },
+    campaign: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
@@ -71,5 +74,42 @@ describe("API Endpoint - Export Leads to CSV", () => {
     expect(text).toContain("Email,Name,Phone,Won Prize,Campaign,Created At");
     expect(text).toContain("henrique@example.com,Henrique,123456,10% Off,Black Friday,");
     expect(text).toContain("johndoe@example.com,John Doe,-,-,-,");
+  });
+
+  it("should filter by campaignId and return custom filename when campaignId is passed", async () => {
+    (getServerSession as any).mockResolvedValue({
+      user: { name: "Admin", role: "ADMIN" },
+    });
+
+    const mockCampaign = { id: "camp_123", slug: "winter-promo" };
+    (prisma.campaign.findUnique as any).mockResolvedValue(mockCampaign);
+
+    const mockLeads = [
+      {
+        email: "filtered@example.com",
+        name: "Filtered Lead",
+        phone: "999888",
+        wonPrize: { name: "Gift Card" },
+        campaign: { name: "Winter Promo" },
+        createdAt: new Date("2026-05-20T12:00:00.000Z"),
+      },
+    ];
+
+    (prisma.lead.findMany as any).mockResolvedValue(mockLeads);
+
+    const mockRequest = new Request("http://localhost/api/admin/leads/export?campaignId=camp_123");
+    const response = await GET(mockRequest);
+
+    expect(response.status).toBe(200);
+    expect(prisma.campaign.findUnique).toHaveBeenCalledWith({
+      where: { id: "camp_123" },
+    });
+    expect(prisma.lead.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { campaignId: "camp_123" },
+    }));
+
+    expect(response.headers.get("Content-Disposition")).toContain("leads_export_winter-promo.csv");
+    const text = await response.text();
+    expect(text).toContain("filtered@example.com,Filtered Lead,999888,Gift Card,Winter Promo,");
   });
 });

@@ -6,7 +6,7 @@ export const leadSchema = z.object({
   phone: z.string().optional(),
   campaign: z.string().optional(),
   consent: z.literal(true, {
-    errorMap: () => ({ message: "You must consent to participate" }),
+    message: "You must consent to participate",
   }),
 });
 

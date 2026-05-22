@@ -13,6 +13,11 @@ model Campaign {
   primaryColor   String   @default("#c5a059")
   secondaryColor String   @default("#f1f1f1")
   backgroundImage String?
+  logo            String?
+  copyTitle       String?
+  copySubtitle    String?
+  copyButton      String?
+  isActive        Boolean  @default(true)
   prizes         Prize[]
   leads          Lead[]
   createdAt      DateTime @default(now())

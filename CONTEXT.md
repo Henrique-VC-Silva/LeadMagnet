@@ -38,4 +38,5 @@ A user account with privileged access to the management dashboard, allowed to co
 Dynamic text elements (e.g., title, subtitle, button text) stored in the database, allowing Admins to rewrite the interface for different campaigns without code changes.
 
 ### Campaign
-A reference tag attached to a Lead to identify which specific marketing effort or version of the Roulette they engaged with.
+A core structural marketing entity that isolates styling themes (custom color palettes and background images), associated Prizes, and captured Leads for a specific marketing effort or version of the Roulette.
+

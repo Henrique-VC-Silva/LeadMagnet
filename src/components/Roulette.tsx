@@ -75,7 +75,7 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
 
   return (
     <div className="flex flex-col items-center gap-8">
-      <div className="relative w-[320px] h-[320px] md:w-[450px] md:h-[450px]">
+      <div className="relative w-full max-w-[300px] sm:max-w-[360px] md:max-w-[450px] aspect-square">
         {/* Outer shadow ring */}
         <div className="absolute inset-[-15px] bg-black/5 rounded-full blur-xl" />
         
@@ -162,16 +162,34 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
         </div>
       </div>
       
-      {/* Help message */}
-      {!hasStarted && (
-        <motion.p 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-muted-foreground font-medium flex items-center gap-2"
-        >
-          Your prize is ready! Click the wheel to find out what you won.
-        </motion.p>
-      )}
+      {/* Help / Spin status message */}
+      <div className="min-h-[48px] flex items-center justify-center px-4 w-full">
+        <AnimatePresence mode="wait">
+          {!hasStarted && (
+            <motion.p 
+              key="ready"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-muted-foreground font-medium text-center"
+            >
+              Your prize is ready! Click the wheel to find out what you won.
+            </motion.p>
+          )}
+
+          {hasStarted && isSpinning && (
+            <motion.p 
+              key="spinning"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="text-xl font-medium text-primary animate-pulse text-center"
+            >
+              Spinning for your prize...
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

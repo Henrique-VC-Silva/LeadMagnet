@@ -18,6 +18,11 @@ export async function createCampaign(data: {
   primaryColor?: string;
   secondaryColor?: string;
   backgroundImage?: string;
+  logo?: string;
+  copyTitle?: string;
+  copySubtitle?: string;
+  copyButton?: string;
+  isActive?: boolean;
 }) {
   await ensureAdmin();
   const campaign = await prisma.campaign.create({
@@ -27,6 +32,11 @@ export async function createCampaign(data: {
       primaryColor: data.primaryColor ?? "#c5a059",
       secondaryColor: data.secondaryColor ?? "#f1f1f1",
       backgroundImage: data.backgroundImage || null,
+      logo: data.logo || null,
+      copyTitle: data.copyTitle || null,
+      copySubtitle: data.copySubtitle || null,
+      copyButton: data.copyButton || null,
+      ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
     },
   });
   revalidatePath("/admin");
@@ -59,6 +69,11 @@ export async function updateCampaign(
     primaryColor: string;
     secondaryColor: string;
     backgroundImage?: string;
+    logo?: string;
+    copyTitle?: string;
+    copySubtitle?: string;
+    copyButton?: string;
+    isActive?: boolean;
   }
 ) {
   await ensureAdmin();
@@ -70,8 +85,30 @@ export async function updateCampaign(
       primaryColor: data.primaryColor,
       secondaryColor: data.secondaryColor,
       backgroundImage: data.backgroundImage || null,
+      logo: data.logo || null,
+      copyTitle: data.copyTitle || null,
+      copySubtitle: data.copySubtitle || null,
+      copyButton: data.copyButton || null,
+      ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
     },
   });
   revalidatePath("/admin");
   return campaign;
+}
+
+export async function deleteCampaign(id: string) {
+  await ensureAdmin();
+  const deletedCampaign = await prisma.$transaction(async (tx) => {
+    await tx.lead.deleteMany({
+      where: { campaignId: id },
+    });
+    await tx.prize.deleteMany({
+      where: { campaignId: id },
+    });
+    return await tx.campaign.delete({
+      where: { id },
+    });
+  });
+  revalidatePath("/admin");
+  return deletedCampaign;
 }

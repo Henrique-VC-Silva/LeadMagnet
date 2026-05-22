@@ -27,7 +27,7 @@ export async function createLead(input: LeadInput) {
         name: result.data.name || null,
         phone: result.data.phone || null,
         campaignId,
-        consent: result.data.consent,
+        consent: !!result.data.consent,
         consentAt: new Date(),
       },
     });

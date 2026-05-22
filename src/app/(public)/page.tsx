@@ -16,7 +16,7 @@ export default async function Home() {
   const settingsRaw = await prisma.setting.findMany({
     where: {
       key: {
-        in: ["copy_title", "copy_subtitle", "copy_button", "image_logo", "image_mascot"]
+        in: ["copy_title", "copy_subtitle", "copy_button", "image_logo", "image_mascot", "copy_success"]
       }
     }
   });
@@ -27,33 +27,37 @@ export default async function Home() {
   }, {} as Record<string, string>);
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center p-4 bg-secondary/20 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center p-4 bg-secondary/20 relative overflow-hidden">
       {settings["image_logo"] && (
-        <div className="absolute top-6 left-6 z-10">
+        <div className="md:absolute md:top-6 md:left-6 md:mb-0 mb-6 z-10 flex justify-center w-full md:w-auto">
           <img src={settings["image_logo"]} alt="Logo" className="h-12 w-auto object-contain" />
         </div>
       )}
 
       {settings["image_mascot"] && (
-        <div className="absolute bottom-0 right-0 md:right-20 z-0 opacity-20 pointer-events-none md:opacity-100 transition-opacity">
-          <img src={settings["image_mascot"]} alt="Mascot" className="h-64 md:h-96 w-auto object-contain drop-shadow-2xl" />
+        <div className="absolute bottom-0 right-20 z-0 hidden md:block transition-opacity pointer-events-none">
+          <img src={settings["image_mascot"]} alt="Mascot" className="h-96 w-auto object-contain drop-shadow-2xl" />
         </div>
       )}
 
-      <div className="max-w-4xl w-full text-center mb-12 relative z-10">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
+      <div className="max-w-4xl w-full text-center mt-4 mb-4 relative z-10 px-2 shrink-0">
+        <h1 className="text-2xl sm:text-3xl md:text-6xl font-extrabold mb-3 tracking-tight leading-tight">
           {settings["copy_title"] || "Spin to Win Your Exclusive Prize"}
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
           {settings["copy_subtitle"] || "Join our community and try your luck. Everyone wins something!"}
         </p>
       </div>
 
-      <div className="relative z-10 w-full max-w-4xl">
-        <GameContainer initialPrizes={prizes} buttonText={settings["copy_button"]} />
+      <div className="flex-1 flex items-center justify-center w-full max-w-4xl relative z-10 py-4">
+        <GameContainer 
+          initialPrizes={prizes} 
+          buttonText={settings["copy_button"]} 
+          copySuccess={settings["copy_success"]} 
+        />
       </div>
       
-      <footer className="mt-20 text-sm text-muted-foreground">
+      <footer className="mt-auto py-4 text-sm text-muted-foreground relative z-10 shrink-0">
         © {new Date().getFullYear()} Lead Magnet Roulette. All rights reserved.
       </footer>
     </main>

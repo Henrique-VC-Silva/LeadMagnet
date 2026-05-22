@@ -45,9 +45,20 @@ export default function CampaignList({ initialCampaigns }: CampaignListProps) {
             <div>
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-xl font-bold">{campaign.name}</h3>
-                <span className="text-xs bg-secondary/80 px-2 py-1 rounded font-mono text-muted-foreground border border-border">
-                  /{campaign.slug}
-                </span>
+                <div className="flex flex-col items-end gap-1.5">
+                  <span className="text-xs bg-secondary/80 px-2 py-1 rounded font-mono text-muted-foreground border border-border">
+                    /{campaign.slug}
+                  </span>
+                  {campaign.isActive !== false ? (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                      Active
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
+                      Inactive
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="flex items-center gap-4 mb-6">

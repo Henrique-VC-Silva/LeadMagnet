@@ -3,14 +3,35 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request?: Request) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
+    let campaignId: string | null = null;
+    let filename = "leads_export.csv";
+
+    if (request) {
+      const { searchParams } = new URL(request.url);
+      campaignId = searchParams.get("campaignId");
+    }
+
+    const where: any = {};
+    if (campaignId) {
+      where.campaignId = campaignId;
+      
+      const campaign = await prisma.campaign.findUnique({
+        where: { id: campaignId },
+      });
+      if (campaign) {
+        filename = `leads_export_${campaign.slug}.csv`;
+      }
+    }
+
     const leads = await prisma.lead.findMany({
+      where,
       include: {
         wonPrize: true,
         campaign: true,
@@ -47,7 +68,7 @@ export async function GET() {
       status: 200,
       headers: {
         "Content-Type": "text/csv",
-        "Content-Disposition": 'attachment; filename="leads_export.csv"',
+        "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });
   } catch (error) {

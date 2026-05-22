@@ -23,9 +23,10 @@ export class RouletteEngine {
         throw new Error("Lead not found");
       }
 
-      // 2. Fetch eligible prizes (in stock or No Prize)
+      // 2. Fetch eligible prizes (in stock or No Prize) for this campaign
       const eligiblePrizes = await tx.prize.findMany({
         where: {
+          campaignId: lead.campaignId,
           OR: [
             { stock: { gt: 0 } },
             { isNoPrize: true }

@@ -6,23 +6,34 @@ vi.mock("next-auth", () => ({
   getServerSession: vi.fn(() => Promise.resolve({ user: { name: "Admin", role: "ADMIN" } })),
 }));
 
-import { createCampaign, getCampaigns, getCampaignBySlug } from "../campaign";
+import { createCampaign, getCampaigns, getCampaignBySlug, updateCampaign, deleteCampaign } from "../campaign";
 import prisma from "@/lib/prisma";
 
 // Mock prisma and auth options
-vi.mock("@/lib/prisma", () => ({
-  default: {
+vi.mock("@/lib/prisma", () => {
+  const mockPrisma = {
     campaign: {
       create: vi.fn(),
       findMany: vi.fn(),
       findUnique: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
     },
-  },
-}));
-
-vi.mock("../api/auth/[...nextauth]/route", () => ({
-  authOptions: {},
-}));
+    lead: {
+      deleteMany: vi.fn(),
+    },
+    prize: {
+      deleteMany: vi.fn(),
+    },
+    $transaction: vi.fn((arg) => {
+      if (typeof arg === "function") {
+        return arg(mockPrisma);
+      }
+      return Promise.resolve(arg);
+    }),
+  };
+  return { default: mockPrisma };
+});
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
@@ -41,7 +52,7 @@ describe("Campaign Actions - CRUD", () => {
       secondaryColor: "#000000",
     };
 
-    const mockCampaign = { id: "camp_1", ...data, createdAt: new Date(), updatedAt: new Date() };
+    const mockCampaign = { id: "camp_1", ...data, logo: null, createdAt: new Date(), updatedAt: new Date() };
     (prisma.campaign.create as any).mockResolvedValue(mockCampaign);
 
     const result = await createCampaign(data);
@@ -53,6 +64,10 @@ describe("Campaign Actions - CRUD", () => {
         primaryColor: "#ff0000",
         secondaryColor: "#000000",
         backgroundImage: null,
+        logo: null,
+        copyTitle: null,
+        copySubtitle: null,
+        copyButton: null,
       },
     });
     expect(result).toEqual(mockCampaign);
@@ -67,7 +82,7 @@ describe("Campaign Actions - CRUD", () => {
       backgroundImage: "https://example.com/bg.jpg",
     };
 
-    const mockCampaign = { id: "camp_1", ...data, createdAt: new Date(), updatedAt: new Date() };
+    const mockCampaign = { id: "camp_1", ...data, logo: null, createdAt: new Date(), updatedAt: new Date() };
     (prisma.campaign.create as any).mockResolvedValue(mockCampaign);
 
     const result = await createCampaign(data);
@@ -79,6 +94,107 @@ describe("Campaign Actions - CRUD", () => {
         primaryColor: "#ff0000",
         secondaryColor: "#000000",
         backgroundImage: "https://example.com/bg.jpg",
+        logo: null,
+        copyTitle: null,
+        copySubtitle: null,
+        copyButton: null,
+      },
+    });
+    expect(result).toEqual(mockCampaign);
+  });
+
+  it("should create campaign correctly with custom copy fields", async () => {
+    const data = {
+      name: "Black Friday Roulette",
+      slug: "black-friday",
+      primaryColor: "#ff0000",
+      secondaryColor: "#000000",
+      copyTitle: "Special Win!",
+      copySubtitle: "Spin to win big discounts",
+      copyButton: "Let's Go!",
+    };
+
+    const mockCampaign = { id: "camp_1", ...data, backgroundImage: null, logo: null, createdAt: new Date(), updatedAt: new Date() };
+    (prisma.campaign.create as any).mockResolvedValue(mockCampaign);
+
+    const result = await createCampaign(data);
+
+    expect(prisma.campaign.create).toHaveBeenCalledWith({
+      data: {
+        name: "Black Friday Roulette",
+        slug: "black-friday",
+        primaryColor: "#ff0000",
+        secondaryColor: "#000000",
+        backgroundImage: null,
+        logo: null,
+        copyTitle: "Special Win!",
+        copySubtitle: "Spin to win big discounts",
+        copyButton: "Let's Go!",
+      },
+    });
+    expect(result).toEqual(mockCampaign);
+  });
+
+  it("should create campaign correctly with logo image", async () => {
+    const data = {
+      name: "Logo Campaign",
+      slug: "logo-campaign",
+      primaryColor: "#ff0000",
+      secondaryColor: "#000000",
+      logo: "/uploads/logo.png",
+    };
+
+    const mockCampaign = { id: "camp_1", ...data, backgroundImage: null, createdAt: new Date(), updatedAt: new Date() };
+    (prisma.campaign.create as any).mockResolvedValue(mockCampaign);
+
+    const result = await createCampaign(data);
+
+    expect(prisma.campaign.create).toHaveBeenCalledWith({
+      data: {
+        name: "Logo Campaign",
+        slug: "logo-campaign",
+        primaryColor: "#ff0000",
+        secondaryColor: "#000000",
+        backgroundImage: null,
+        logo: "/uploads/logo.png",
+        copyTitle: null,
+        copySubtitle: null,
+        copyButton: null,
+      },
+    });
+    expect(result).toEqual(mockCampaign);
+  });
+
+  it("should update campaign correctly with logo image", async () => {
+    const data = {
+      name: "Updated Campaign",
+      slug: "updated-campaign",
+      primaryColor: "#0000ff",
+      secondaryColor: "#ffffff",
+      backgroundImage: "/uploads/bg.png",
+      logo: "/uploads/new-logo.png",
+      copyTitle: "Updated Title",
+      copySubtitle: "Updated Subtitle",
+      copyButton: "Updated Button",
+    };
+
+    const mockCampaign = { id: "camp_1", ...data, createdAt: new Date(), updatedAt: new Date() };
+    (prisma.campaign.update as any).mockResolvedValue(mockCampaign);
+
+    const result = await updateCampaign("camp_1", data);
+
+    expect(prisma.campaign.update).toHaveBeenCalledWith({
+      where: { id: "camp_1" },
+      data: {
+        name: "Updated Campaign",
+        slug: "updated-campaign",
+        primaryColor: "#0000ff",
+        secondaryColor: "#ffffff",
+        backgroundImage: "/uploads/bg.png",
+        logo: "/uploads/new-logo.png",
+        copyTitle: "Updated Title",
+        copySubtitle: "Updated Subtitle",
+        copyButton: "Updated Button",
       },
     });
     expect(result).toEqual(mockCampaign);
@@ -110,6 +226,88 @@ describe("Campaign Actions - CRUD", () => {
         },
       },
     });
+    expect(result).toEqual(mockCampaign);
+  });
+
+  it("should create campaign correctly with isActive set", async () => {
+    const data = {
+      name: "Inactive Campaign",
+      slug: "inactive",
+      primaryColor: "#ff0000",
+      secondaryColor: "#000000",
+      isActive: false,
+    };
+
+    const mockCampaign = { id: "camp_1", ...data, logo: null, backgroundImage: null, createdAt: new Date(), updatedAt: new Date() };
+    (prisma.campaign.create as any).mockResolvedValue(mockCampaign);
+
+    const result = await createCampaign(data);
+
+    expect(prisma.campaign.create).toHaveBeenCalledWith({
+      data: {
+        name: "Inactive Campaign",
+        slug: "inactive",
+        primaryColor: "#ff0000",
+        secondaryColor: "#000000",
+        backgroundImage: null,
+        logo: null,
+        copyTitle: null,
+        copySubtitle: null,
+        copyButton: null,
+        isActive: false,
+      },
+    });
+    expect(result).toEqual(mockCampaign);
+  });
+
+  it("should update campaign correctly including isActive flag", async () => {
+    const data = {
+      name: "Updated Campaign",
+      slug: "updated-campaign",
+      primaryColor: "#0000ff",
+      secondaryColor: "#ffffff",
+      isActive: false,
+    };
+
+    const mockCampaign = { id: "camp_1", ...data, logo: null, backgroundImage: null, createdAt: new Date(), updatedAt: new Date() };
+    (prisma.campaign.update as any).mockResolvedValue(mockCampaign);
+
+    const result = await updateCampaign("camp_1", data);
+
+    expect(prisma.campaign.update).toHaveBeenCalledWith({
+      where: { id: "camp_1" },
+      data: {
+        name: "Updated Campaign",
+        slug: "updated-campaign",
+        primaryColor: "#0000ff",
+        secondaryColor: "#ffffff",
+        backgroundImage: null,
+        logo: null,
+        copyTitle: null,
+        copySubtitle: null,
+        copyButton: null,
+        isActive: false,
+      },
+    });
+    expect(result).toEqual(mockCampaign);
+  });
+
+  it("should delete campaign and its relations correctly in a transaction", async () => {
+    const mockCampaign = { id: "camp_1", name: "To Delete", slug: "to-delete" };
+    (prisma.campaign.delete as any).mockResolvedValue(mockCampaign);
+
+    const result = await deleteCampaign("camp_1");
+
+    expect(prisma.lead.deleteMany).toHaveBeenCalledWith({
+      where: { campaignId: "camp_1" },
+    });
+    expect(prisma.prize.deleteMany).toHaveBeenCalledWith({
+      where: { campaignId: "camp_1" },
+    });
+    expect(prisma.campaign.delete).toHaveBeenCalledWith({
+      where: { id: "camp_1" },
+    });
+    expect(prisma.$transaction).toHaveBeenCalled();
     expect(result).toEqual(mockCampaign);
   });
 });
