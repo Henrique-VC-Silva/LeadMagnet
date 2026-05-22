@@ -3,6 +3,8 @@ import GameContainer from "@/components/GameContainer";
 import { getCampaignBySlug } from "@/app/actions/campaign";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 interface CampaignPageProps {
   params: Promise<{ slug: string }>;
 }

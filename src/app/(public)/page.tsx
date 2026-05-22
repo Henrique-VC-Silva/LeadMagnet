@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import GameContainer from "@/components/GameContainer";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   // Fetch initial prizes to display on the wheel
   const prizes = await prisma.prize.findMany({
