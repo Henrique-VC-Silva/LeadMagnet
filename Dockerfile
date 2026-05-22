@@ -43,10 +43,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
-# Remove prisma.config.ts — it uses dotenv which fails in the container (no .env
-# file). Prisma will fall back to schema.prisma's env("DATABASE_URL") instead.
-RUN rm -f prisma.config.ts
-
 COPY --chown=nextjs:nodejs entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
