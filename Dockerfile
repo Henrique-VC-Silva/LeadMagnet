@@ -7,7 +7,6 @@ WORKDIR /app
 
 # Install dependencies based on the package-lock.json
 COPY package*.json ./
-COPY prisma ./prisma/
 RUN npm ci
 
 # Rebuild the source code only when needed
@@ -16,8 +15,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client and build the application
-RUN npx prisma generate
+# Build the application
 RUN npm run build
 
 # Production image, copy all the files and run next
@@ -43,9 +41,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.mjs ./prisma.config.mjs
 
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --chown=nextjs:nodejs entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
@@ -53,7 +49,6 @@ USER nextjs
 
 EXPOSE 3000
 ENV PORT=3000
-
 
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["node", "server.js"]
