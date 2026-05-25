@@ -12,10 +12,13 @@ export default async function Home() {
     ]
   }).limit(8).lean();
 
-  const prizes = prizesRaw.map((p: any) => ({
-    ...p,
-    id: p._id.toString(),
-  }));
+  const prizes = prizesRaw.map((p: any) => {
+    const plain = JSON.parse(JSON.stringify(p));
+    return {
+      ...plain,
+      id: plain._id,
+    };
+  });
 
   const settingsRaw = await Setting.find({
     key: {

@@ -56,12 +56,19 @@ export async function getCampaigns() {
 }
 
 export async function getCampaignBySlug(slug: string) {
-  const campaign = await Campaign.findOne({ slug }).lean();
-  if (!campaign) return null;
+  const campaignRaw = await Campaign.findOne({ slug }).lean();
+  if (!campaignRaw) return null;
 
-  campaign.id = campaign._id.toString();
-  const prizes = await Prize.find({ campaignId: campaign.id }).sort({ createdAt: 1 }).lean();
-  campaign.prizes = prizes.map((p: any) => ({ ...p, id: p._id.toString() }));
+  const campaign = JSON.parse(JSON.stringify(campaignRaw));
+  campaign.id = campaign._id;
+  const prizesRaw = await Prize.find({ campaignId: campaign.id }).sort({ createdAt: 1 }).lean();
+  campaign.prizes = prizesRaw.map((p: any) => {
+    const plain = JSON.parse(JSON.stringify(p));
+    return {
+      ...plain,
+      id: plain._id,
+    };
+  });
   
   return campaign;
 }
