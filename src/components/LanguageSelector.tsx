@@ -35,7 +35,7 @@ export function LanguageSelector({ defaultOpen = false }: { defaultOpen?: boolea
           {/* Overlay to close the selector when clicking outside */}
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           
-          <div className="absolute right-0 mt-2 w-40 rounded-xl bg-white/95 dark:bg-black/90 backdrop-blur-xl border border-white/20 shadow-2xl p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute right-0 mt-2 w-40 rounded-xl bg-white/95 dark:bg-black/10 backdrop-blur-xl border border-white/20 shadow-2xl p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
             {languages.map((lang) => (
               <button
                 key={lang.code}
