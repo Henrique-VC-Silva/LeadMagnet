@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Prize } from "@prisma/client";
+import { Prize } from "@/lib/mongoose";
 import { deletePrize } from "@/app/actions/prize";
 import PrizeForm from "./PrizeForm";
 import { 

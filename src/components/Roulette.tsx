@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
-import { Prize } from "@prisma/client";
+import { Prize } from "@/lib/mongoose";
 import { MousePointer2 } from "lucide-react";
 
 interface RouletteProps {

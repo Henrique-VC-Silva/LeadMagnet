@@ -1,25 +1,25 @@
-import prisma from "@/lib/prisma";
+import { Prize, Setting } from "@/lib/mongoose";
 import GameContainer from "@/components/GameContainer";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   // Fetch initial prizes to display on the wheel
-  const prizes = await prisma.prize.findMany({
-    where: {
-      OR: [
-        { stock: { gt: 0 } },
-        { isNoPrize: true }
-      ]
-    },
-    take: 8 // Keep the wheel visually balanced
-  });
+  const prizesRaw = await Prize.find({
+    $or: [
+      { stock: { $gt: 0 } },
+      { isNoPrize: true }
+    ]
+  }).limit(8).lean();
 
-  const settingsRaw = await prisma.setting.findMany({
-    where: {
-      key: {
-        in: ["copy_title", "copy_subtitle", "copy_button", "image_logo", "image_mascot", "copy_success"]
-      }
+  const prizes = prizesRaw.map((p: any) => ({
+    ...p,
+    id: p._id.toString(),
+  }));
+
+  const settingsRaw = await Setting.find({
+    key: {
+      $in: ["copy_title", "copy_subtitle", "copy_button", "image_logo", "image_mascot", "copy_success"]
     }
   });
 
@@ -53,6 +53,7 @@ export default async function Home() {
 
       <div className="flex-1 flex items-center justify-center w-full max-w-4xl relative z-10 py-4">
         <GameContainer 
+          campaignSlug="default-campaign"
           initialPrizes={prizes} 
           buttonText={settings["copy_button"]} 
           copySuccess={settings["copy_success"]} 

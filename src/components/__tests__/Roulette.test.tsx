@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import Roulette from "../Roulette";
-import { Prize } from "@prisma/client";
+import { Prize } from "@/lib/mongoose";
 
 // Mock React hooks to execute synchronously without React dispatcher
 vi.mock("react", async (importOriginal) => {

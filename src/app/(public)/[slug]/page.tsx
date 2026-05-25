@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { Setting } from "@/lib/mongoose";
 import GameContainer from "@/components/GameContainer";
 import { getCampaignBySlug } from "@/app/actions/campaign";
 import { notFound } from "next/navigation";
@@ -17,11 +17,9 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
     notFound();
   }
 
-  const settingsRaw = await prisma.setting.findMany({
-    where: {
-      key: {
-        in: ["copy_title", "copy_subtitle", "copy_button", "image_logo", "image_mascot", "copy_success"]
-      }
+  const settingsRaw = await Setting.find({
+    key: {
+      $in: ["copy_title", "copy_subtitle", "copy_button", "image_logo", "image_mascot", "copy_success"]
     }
   });
 
@@ -122,9 +120,9 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
           {copySubtitle}
         </p>
       </div>
-
       <div className="flex-1 flex items-center justify-center w-full max-w-4xl relative z-10 py-4">
         <GameContainer 
+          campaignSlug={campaign.slug}
           initialPrizes={prizes} 
           buttonText={copyButton} 
           copySuccess={settings["copy_success"]} 

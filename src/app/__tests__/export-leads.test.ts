@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET } from "../api/admin/leads/export/route";
 import { getServerSession } from "next-auth";
-import prisma from "@/lib/prisma";
 
 // Mock next-auth
 vi.mock("next-auth", () => ({
@@ -12,17 +11,30 @@ vi.mock("@/app/api/auth/[...nextauth]/route", () => ({
   authOptions: {},
 }));
 
-// Mock Prisma
-vi.mock("@/lib/prisma", () => ({
-  default: {
-    lead: {
-      findMany: vi.fn(),
+// Mock mongoose
+vi.mock("@/lib/mongoose", () => {
+  return {
+    Lead: {
+      find: vi.fn(() => ({
+        sort: vi.fn(() => ({
+          lean: vi.fn().mockResolvedValue([]),
+        })),
+      })),
     },
-    campaign: {
-      findUnique: vi.fn(),
+    Campaign: {
+      findById: vi.fn(() => ({
+        lean: vi.fn().mockResolvedValue(null),
+      })),
     },
-  },
-}));
+    Prize: {
+      findById: vi.fn(() => ({
+        lean: vi.fn().mockResolvedValue(null),
+      })),
+    },
+  };
+});
+
+import { Lead, Campaign, Prize } from "@/lib/mongoose";
 
 describe("API Endpoint - Export Leads to CSV", () => {
   beforeEach(() => {
@@ -49,21 +61,33 @@ describe("API Endpoint - Export Leads to CSV", () => {
         email: "henrique@example.com",
         name: "Henrique",
         phone: "123456",
-        wonPrize: { name: "10% Off" },
-        campaign: { name: "Black Friday" },
+        wonPrizeId: "p1",
+        campaignId: "c1",
         createdAt: new Date("2026-05-20T12:00:00.000Z"),
       },
       {
         email: "johndoe@example.com",
         name: "John Doe",
         phone: null,
-        wonPrize: null,
-        campaign: null,
+        wonPrizeId: null,
+        campaignId: null,
         createdAt: new Date("2026-05-20T13:00:00.000Z"),
       },
     ];
 
-    (prisma.lead.findMany as any).mockResolvedValue(mockLeads);
+    (Lead.find as any).mockReturnValue({
+      sort: vi.fn(() => ({
+        lean: vi.fn().mockResolvedValue(mockLeads),
+      })),
+    });
+
+    (Prize.findById as any).mockImplementation((id: string) => ({
+      lean: vi.fn().mockResolvedValue(id === "p1" ? { name: "10% Off" } : null),
+    }));
+
+    (Campaign.findById as any).mockImplementation((id: string) => ({
+      lean: vi.fn().mockResolvedValue(id === "c1" ? { name: "Black Friday" } : null),
+    }));
 
     const response = await GET();
     expect(response.status).toBe(200);
@@ -81,32 +105,38 @@ describe("API Endpoint - Export Leads to CSV", () => {
       user: { name: "Admin", role: "ADMIN" },
     });
 
-    const mockCampaign = { id: "camp_123", slug: "winter-promo" };
-    (prisma.campaign.findUnique as any).mockResolvedValue(mockCampaign);
+    const mockCampaign = { _id: "camp_123", slug: "winter-promo", name: "Winter Promo" };
+    (Campaign.findById as any).mockReturnValue({
+      lean: vi.fn().mockResolvedValue(mockCampaign),
+    });
 
     const mockLeads = [
       {
         email: "filtered@example.com",
         name: "Filtered Lead",
         phone: "999888",
-        wonPrize: { name: "Gift Card" },
-        campaign: { name: "Winter Promo" },
+        wonPrizeId: "p_win",
+        campaignId: "camp_123",
         createdAt: new Date("2026-05-20T12:00:00.000Z"),
       },
     ];
 
-    (prisma.lead.findMany as any).mockResolvedValue(mockLeads);
+    (Lead.find as any).mockReturnValue({
+      sort: vi.fn(() => ({
+        lean: vi.fn().mockResolvedValue(mockLeads),
+      })),
+    });
+
+    (Prize.findById as any).mockImplementation((id: string) => ({
+      lean: vi.fn().mockResolvedValue(id === "p_win" ? { name: "Gift Card" } : null),
+    }));
 
     const mockRequest = new Request("http://localhost/api/admin/leads/export?campaignId=camp_123");
     const response = await GET(mockRequest);
 
     expect(response.status).toBe(200);
-    expect(prisma.campaign.findUnique).toHaveBeenCalledWith({
-      where: { id: "camp_123" },
-    });
-    expect(prisma.lead.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: { campaignId: "camp_123" },
-    }));
+    expect(Campaign.findById).toHaveBeenCalledWith("camp_123");
+    expect(Lead.find).toHaveBeenCalledWith({ campaignId: "camp_123" });
 
     expect(response.headers.get("Content-Disposition")).toContain("leads_export_winter-promo.csv");
     const text = await response.text();

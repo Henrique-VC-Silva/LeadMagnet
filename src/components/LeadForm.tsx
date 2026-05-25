@@ -2,21 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { leadSchema, LeadInput } from "@/lib/validations";
 import { createLead } from "@/app/actions/lead";
 import { Loader2 } from "lucide-react";
 
 interface LeadFormProps {
+  campaignSlug: string;
   onSuccess: (leadId: string) => void;
   buttonText?: string;
 }
 
-export default function LeadForm({ onSuccess, buttonText }: LeadFormProps) {
+export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-  const searchParams = useSearchParams();
 
   const {
     register,
@@ -28,11 +27,10 @@ export default function LeadForm({ onSuccess, buttonText }: LeadFormProps) {
   });
 
   useEffect(() => {
-    const campaign = searchParams.get("campaign");
-    if (campaign) {
-      setValue("campaign", campaign);
+    if (campaignSlug) {
+      setValue("campaign", campaignSlug);
     }
-  }, [searchParams, setValue]);
+  }, [campaignSlug, setValue]);
 
   const onSubmit = async (data: LeadInput) => {
     setIsPending(true);

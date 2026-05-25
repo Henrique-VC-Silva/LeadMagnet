@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import prisma from "@/lib/prisma";
+import { Lead, Campaign, Prize } from "@/lib/mongoose";
 
 export async function GET(request?: Request) {
   const session = await getServerSession(authOptions);
@@ -18,41 +18,43 @@ export async function GET(request?: Request) {
       campaignId = searchParams.get("campaignId");
     }
 
-    const where: any = {};
+    const query: any = {};
     if (campaignId) {
-      where.campaignId = campaignId;
+      query.campaignId = campaignId;
       
-      const campaign = await prisma.campaign.findUnique({
-        where: { id: campaignId },
-      });
+      const campaign = await Campaign.findById(campaignId).lean() as any;
       if (campaign) {
         filename = `leads_export_${campaign.slug}.csv`;
       }
     }
 
-    const leads = await prisma.lead.findMany({
-      where,
-      include: {
-        wonPrize: true,
-        campaign: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const leads = await Lead.find(query).sort({ createdAt: -1 }).lean() as any[];
 
     // Generate CSV Header
     const headers = ["Email", "Name", "Phone", "Won Prize", "Campaign", "Created At"];
     const csvRows = [headers.join(",")];
 
     for (const lead of leads) {
+      let wonPrizeName = "-";
+      let campaignName = "-";
+
+      if (lead.wonPrizeId) {
+        const prize = await Prize.findById(lead.wonPrizeId).lean() as any;
+        if (prize) wonPrizeName = prize.name;
+      }
+
+      if (lead.campaignId) {
+        const campaign = await Campaign.findById(lead.campaignId).lean() as any;
+        if (campaign) campaignName = campaign.name;
+      }
+
       const email = lead.email || "-";
       const name = lead.name || "-";
       const phone = lead.phone || "-";
-      const wonPrize = lead.wonPrize?.name || "-";
-      const campaign = lead.campaign?.name || "-";
       const createdAt = lead.createdAt ? new Date(lead.createdAt).toISOString() : "-";
 
       // Escape quotes and commas in fields
-      const escapedRow = [email, name, phone, wonPrize, campaign, createdAt].map(field => {
+      const escapedRow = [email, name, phone, wonPrizeName, campaignName, createdAt].map(field => {
         const escaped = field.replace(/"/g, '""');
         return escaped.includes(",") || escaped.includes("\n") || escaped.includes('"')
           ? `"${escaped}"`

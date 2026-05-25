@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Campaign, Prize } from "@prisma/client";
+import { Campaign, Prize } from "@/lib/mongoose";
 import { updateCampaign, deleteCampaign } from "@/app/actions/campaign";
 import PrizeList from "./PrizeList";
 import { Sparkles, Palette, Gift, Loader2, Upload, Trash2, Image as ImageIcon } from "lucide-react";

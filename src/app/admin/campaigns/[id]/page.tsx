@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { Campaign, Prize } from "@/lib/mongoose";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -18,18 +18,15 @@ export default async function AdminCampaignDetailsPage({ params }: AdminCampaign
   }
 
   const { id } = await params;
-  const campaign = await prisma.campaign.findUnique({
-    where: { id },
-    include: {
-      prizes: {
-        orderBy: { createdAt: "asc" },
-      },
-    },
-  });
+  const campaign = await Campaign.findById(id).lean() as any;
 
   if (!campaign) {
     notFound();
   }
+
+  campaign.id = campaign._id.toString();
+  const prizes = await Prize.find({ campaignId: campaign.id }).sort({ createdAt: 1 }).lean();
+  campaign.prizes = prizes.map((p: any) => ({ ...p, id: p._id.toString() }));
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">

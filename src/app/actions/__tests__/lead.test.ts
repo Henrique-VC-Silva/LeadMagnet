@@ -1,18 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createLead } from "../lead";
-import prisma from "@/lib/prisma";
 
-// Mock Prisma
-vi.mock("@/lib/prisma", () => ({
-  default: {
-    campaign: {
-      findUnique: vi.fn(),
+// Mock Mongoose models
+vi.mock("@/lib/mongoose", () => {
+  return {
+    Campaign: {
+      findOne: vi.fn(() => ({
+        lean: vi.fn().mockResolvedValue(null),
+      })),
     },
-    lead: {
+    Lead: {
       create: vi.fn(),
     },
-  },
-}));
+  };
+});
+
+import { Campaign, Lead } from "@/lib/mongoose";
 
 describe("Lead Action - createLead", () => {
   beforeEach(() => {
@@ -29,29 +32,30 @@ describe("Lead Action - createLead", () => {
     };
 
     // Mock campaign slug lookup
-    (prisma.campaign.findUnique as any).mockResolvedValue({
-      id: "camp_black_friday",
-      name: "Black Friday",
-      slug: "black-friday",
+    (Campaign.findOne as any).mockReturnValue({
+      lean: vi.fn().mockResolvedValue({
+        _id: "camp_black_friday",
+        name: "Black Friday",
+        slug: "black-friday",
+      }),
     });
 
-    (prisma.lead.create as any).mockResolvedValue({ id: "lead_123" });
+    (Lead.create as any).mockResolvedValue({
+      _id: "lead_123",
+      email: "test@example.com",
+    });
 
     const result = await createLead(input);
 
-    expect(prisma.campaign.findUnique).toHaveBeenCalledWith({
-      where: { slug: "black-friday" },
-    });
+    expect(Campaign.findOne).toHaveBeenCalledWith({ slug: "black-friday" });
 
-    expect(prisma.lead.create).toHaveBeenCalledWith({
-      data: {
-        email: "test@example.com",
-        name: "John Doe",
-        phone: "123456",
-        campaignId: "camp_black_friday",
-        consent: true,
-        consentAt: expect.any(Date),
-      },
+    expect(Lead.create).toHaveBeenCalledWith({
+      email: "test@example.com",
+      name: "John Doe",
+      phone: "123456",
+      campaignId: "camp_black_friday",
+      consent: true,
+      consentAt: expect.any(Date),
     });
 
     expect(result).toEqual({ success: true, leadId: "lead_123" });

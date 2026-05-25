@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { Setting } from "@/lib/mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
@@ -15,7 +15,7 @@ async function ensureAdmin() {
 
 export async function getSettings() {
   await ensureAdmin();
-  const settings = await prisma.setting.findMany();
+  const settings = await Setting.find();
   // Return as a simple object for easier handling
   return settings.reduce((acc, curr) => {
     acc[curr.key] = curr.value;
@@ -27,11 +27,11 @@ export async function saveSettings(data: Record<string, string>) {
   await ensureAdmin();
   
   const operations = Object.entries(data).map(([key, value]) => 
-    prisma.setting.upsert({
-      where: { key },
-      update: { value },
-      create: { key, value }
-    })
+    Setting.findOneAndUpdate(
+      { key },
+      { value },
+      { upsert: true, new: true }
+    )
   );
 
   await Promise.all(operations);
@@ -40,10 +40,8 @@ export async function saveSettings(data: Record<string, string>) {
 }
 
 export async function getThemeSettings(): Promise<ThemeConfig> {
-  const settings = await prisma.setting.findMany({
-    where: {
-      key: { startsWith: "theme_" }
-    }
+  const settings = await Setting.find({
+    key: /^theme_/
   });
 
   const config = { ...DEFAULT_THEME };

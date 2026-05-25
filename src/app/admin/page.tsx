@@ -1,18 +1,21 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import prisma from "@/lib/prisma";
+import { Lead, Campaign } from "@/lib/mongoose";
 import Link from "next/link";
-import { Users, Gift, Settings, ArrowRight, FolderKanban } from "lucide-react";
+import { Users, Settings, ArrowRight, FolderKanban } from "lucide-react";
 import CampaignList from "@/components/admin/CampaignList";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
 
-  const leadsCount = await prisma.lead.count();
-  const campaignsCount = await prisma.campaign.count();
-  const campaigns = await prisma.campaign.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  const leadsCount = await Lead.countDocuments();
+  const campaignsCount = await Campaign.countDocuments();
+  const campaignsRaw = await Campaign.find().sort({ createdAt: -1 }).lean();
+  
+  const campaigns = campaignsRaw.map((c: any) => ({
+    ...c,
+    id: c._id.toString(),
+  }));
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-10">

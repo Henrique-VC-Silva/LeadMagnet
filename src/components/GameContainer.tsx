@@ -3,16 +3,18 @@
 import { useState, Suspense } from "react";
 import LeadForm from "./LeadForm";
 import Roulette from "./Roulette";
-import { Prize } from "@prisma/client";
+import { Prize } from "@/lib/mongoose";
 import { spinAction } from "@/app/actions/spin";
 import { motion, AnimatePresence } from "framer-motion";
 import { PartyPopper, RefreshCw } from "lucide-react";
 
 export default function GameContainer({ 
+  campaignSlug,
   initialPrizes, 
   buttonText,
   copySuccess
 }: { 
+  campaignSlug: string;
   initialPrizes: Prize[], 
   buttonText?: string,
   copySuccess?: string
@@ -52,7 +54,7 @@ export default function GameContainer({
             exit={{ opacity: 0, y: -20 }}
           >
             <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading form...</div>}>
-              <LeadForm onSuccess={handleLeadSuccess} buttonText={buttonText} />
+              <LeadForm campaignSlug={campaignSlug} onSuccess={handleLeadSuccess} buttonText={buttonText} />
             </Suspense>
           </motion.div>
         )}

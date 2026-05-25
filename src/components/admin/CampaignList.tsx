@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "@/lib/mongoose";
 import CreateCampaignForm from "./CreateCampaignForm";
 import Link from "next/link";
 import { Plus, ArrowRight, Settings, Sparkles } from "lucide-react";

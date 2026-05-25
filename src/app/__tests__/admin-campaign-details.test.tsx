@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
 import AdminCampaignDetailsPage from "../admin/campaigns/[id]/page";
-import prisma from "@/lib/prisma";
 
 // Mock next-auth
 vi.mock("next-auth", () => ({
@@ -13,21 +12,33 @@ vi.mock("@/app/api/auth/[...nextauth]/route", () => ({
   authOptions: {},
 }));
 
-// Mock Prisma
-vi.mock("@/lib/prisma", () => ({
-  default: {
-    campaign: {
-      findUnique: vi.fn().mockResolvedValue({
-        id: "camp_123",
-        name: "Summer Campaign Details",
-        slug: "summer-deals",
-        primaryColor: "#ff0000",
-        secondaryColor: "#000000",
-        prizes: [],
-      }),
+// Mock mongoose Campaign and Prize
+vi.mock("@/lib/mongoose", () => {
+  const mockCampaign = {
+    _id: "camp_123",
+    name: "Summer Campaign Details",
+    slug: "summer-deals",
+    primaryColor: "#ff0000",
+    secondaryColor: "#000000",
+  };
+
+  return {
+    Campaign: {
+      findById: vi.fn(() => ({
+        lean: vi.fn().mockResolvedValue(mockCampaign),
+      })),
     },
-  },
-}));
+    Prize: {
+      find: vi.fn(() => ({
+        sort: vi.fn(() => ({
+          lean: vi.fn().mockResolvedValue([]),
+        })),
+      })),
+    },
+  };
+});
+
+import { Campaign, Prize } from "@/lib/mongoose";
 
 // Mock child component to inspect rendering
 vi.mock("@/components/admin/CampaignDetailsTabs", () => ({
@@ -50,15 +61,9 @@ describe("Admin Campaign Details Page", () => {
       params: Promise.resolve({ id: "camp_123" }),
     });
 
-    // Verify findUnique database call
-    expect(prisma.campaign.findUnique).toHaveBeenCalledWith({
-      where: { id: "camp_123" },
-      include: {
-        prizes: {
-          orderBy: { createdAt: "asc" },
-        },
-      },
-    });
+    // Verify findById database call
+    expect(Campaign.findById).toHaveBeenCalledWith("camp_123");
+    expect(Prize.find).toHaveBeenCalledWith({ campaignId: "camp_123" });
 
     // Inspect dynamic elements in JSX
     const html = renderToStaticMarkup(result);

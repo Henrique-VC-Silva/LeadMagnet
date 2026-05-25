@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Prize } from "@prisma/client";
+import { Prize } from "@/lib/mongoose";
 import { createPrize, updatePrize } from "@/app/actions/prize";
 import { Loader2, X } from "lucide-react";
 

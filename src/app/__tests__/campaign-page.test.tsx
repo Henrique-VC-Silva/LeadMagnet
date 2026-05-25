@@ -2,28 +2,25 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
 import CampaignPage from "../(public)/[slug]/page";
 import { getCampaignBySlug } from "../actions/campaign";
-import prisma from "@/lib/prisma";
 
 // Mock campaign actions
 vi.mock("../actions/campaign", () => ({
   getCampaignBySlug: vi.fn(),
 }));
 
-// Mock prisma settings findMany
-vi.mock("@/lib/prisma", () => ({
-  default: {
-    setting: {
-      findMany: vi.fn().mockResolvedValue([
-        { key: "copy_title", value: "Global Title" },
-      ]),
-    },
+// Mock mongoose settings find
+vi.mock("@/lib/mongoose", () => ({
+  Setting: {
+    find: vi.fn().mockResolvedValue([
+      { key: "copy_title", value: "Global Title" },
+    ]),
   },
 }));
 
 // Mock GameContainer to inspect its props
 vi.mock("@/components/GameContainer", () => ({
-  default: ({ initialPrizes, buttonText }: any) => (
-    <div className="game-container-mock" data-prizes={JSON.stringify(initialPrizes)} data-button={buttonText}>
+  default: ({ campaignSlug, initialPrizes, buttonText }: any) => (
+    <div className="game-container-mock" data-campaign-slug={campaignSlug} data-prizes={JSON.stringify(initialPrizes)} data-button={buttonText}>
       Game Container
     </div>
   ),
@@ -68,6 +65,9 @@ describe("Campaign Page - Dynamic Rendering", () => {
 
     // Verify campaign title
     expect(html).toContain("Global Title");
+
+    // Verify campaignSlug is propagated to GameContainer
+    expect(html).toContain('data-campaign-slug="black-friday"');
   });
 
   it("should render campaign-specific copy when defined instead of global settings", async () => {

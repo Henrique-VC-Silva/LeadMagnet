@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createCampaign } from "@/app/actions/campaign";
 import { Loader2, X, Upload, Trash2, Image as ImageIcon } from "lucide-react";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "@/lib/mongoose";
 
 interface CreateCampaignFormProps {
   onSuccess: (campaign: Campaign) => void;

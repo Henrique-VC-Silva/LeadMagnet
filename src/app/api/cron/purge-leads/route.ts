@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { Lead, Setting } from "@/lib/mongoose";
 
 export async function GET(req: Request) {
   // Simple auth via header to prevent public access
@@ -10,23 +10,19 @@ export async function GET(req: Request) {
 
   try {
     // Get retention policy from settings
-    const retentionSetting = await prisma.setting.findUnique({
-      where: { key: "retention_days" },
-    });
+    const retentionSetting = await Setting.findOne({ key: "retention_days" }).lean() as any;
 
     const days = retentionSetting ? parseInt(retentionSetting.value) : 90;
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
 
-    const deleted = await prisma.lead.deleteMany({
-      where: {
-        createdAt: { lt: cutoff },
-      },
+    const deleted = await Lead.deleteMany({
+      createdAt: { $lt: cutoff },
     });
 
     return NextResponse.json({
       success: true,
-      deletedCount: deleted.count,
+      deletedCount: deleted.deletedCount,
       retentionDays: days,
     });
   } catch (error) {

@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/lib/prisma";
+import { Prize } from "@/lib/mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
@@ -12,11 +12,17 @@ async function ensureAdmin() {
   }
 }
 
+const formatObj = (doc: any) => {
+  if (!doc) return doc;
+  const obj = typeof doc.toObject === 'function' ? doc.toObject() : doc;
+  obj.id = obj._id ? obj._id.toString() : obj.id;
+  return obj;
+};
+
 export async function getPrizes() {
   await ensureAdmin();
-  return await prisma.prize.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  const prizes = await Prize.find().sort({ createdAt: -1 });
+  return prizes.map(formatObj);
 }
 
 export async function createPrize(data: {
@@ -28,9 +34,9 @@ export async function createPrize(data: {
   campaignId?: string;
 }) {
   await ensureAdmin();
-  const prize = await prisma.prize.create({ data });
+  const prizeDoc = await Prize.create(data);
   revalidatePath("/admin");
-  return prize;
+  return formatObj(prizeDoc);
 }
 
 export async function updatePrize(
@@ -45,16 +51,13 @@ export async function updatePrize(
   }>
 ) {
   await ensureAdmin();
-  const prize = await prisma.prize.update({
-    where: { id },
-    data,
-  });
+  const prizeDoc = await Prize.findByIdAndUpdate(id, data, { new: true });
   revalidatePath("/admin");
-  return prize;
+  return formatObj(prizeDoc);
 }
 
 export async function deletePrize(id: string) {
   await ensureAdmin();
-  await prisma.prize.delete({ where: { id } });
+  await Prize.findByIdAndDelete(id);
   revalidatePath("/admin");
 }
