@@ -24,9 +24,17 @@ export default async function AdminCampaignDetailsPage({ params }: AdminCampaign
     notFound();
   }
 
-  campaign.id = campaign._id.toString();
-  const prizes = await Prize.find({ campaignId: campaign.id }).sort({ createdAt: 1 }).lean();
-  campaign.prizes = prizes.map((p: any) => ({ ...p, id: p._id.toString() }));
+  const campaignClean = JSON.parse(JSON.stringify(campaign));
+  campaignClean.id = campaignClean._id;
+  
+  const prizesRaw = await Prize.find({ campaignId: campaignClean.id }).sort({ createdAt: 1 }).lean();
+  campaignClean.prizes = prizesRaw.map((p: any) => {
+    const plain = JSON.parse(JSON.stringify(p));
+    return {
+      ...plain,
+      id: plain._id,
+    };
+  });
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
@@ -36,13 +44,13 @@ export default async function AdminCampaignDetailsPage({ params }: AdminCampaign
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Dashboard
           </Link>
           <h1 className="text-3xl font-bold flex items-center gap-3">
-            {campaign.name}
+            {campaignClean.name}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Configure prizes, customize color themes, and view campaign statistics.</p>
         </div>
 
         <Link
-          href={`/${campaign.slug}`}
+          href={`/${campaignClean.slug}`}
           target="_blank"
           className="flex items-center gap-2 px-4 py-2 border border-primary/30 rounded-lg text-primary font-medium hover:bg-primary/10 transition-all self-start md:self-auto"
         >
@@ -50,7 +58,7 @@ export default async function AdminCampaignDetailsPage({ params }: AdminCampaign
         </Link>
       </header>
 
-      <CampaignDetailsTabs campaign={campaign} />
+      <CampaignDetailsTabs campaign={campaignClean} />
     </div>
   );
 }

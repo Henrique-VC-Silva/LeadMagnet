@@ -12,10 +12,13 @@ export default async function AdminDashboard() {
   const campaignsCount = await Campaign.countDocuments();
   const campaignsRaw = await Campaign.find().sort({ createdAt: -1 }).lean();
   
-  const campaigns = campaignsRaw.map((c: any) => ({
-    ...c,
-    id: c._id.toString(),
-  }));
+  const campaigns = campaignsRaw.map((c: any) => {
+    const plain = JSON.parse(JSON.stringify(c));
+    return {
+      ...plain,
+      id: plain._id,
+    };
+  });
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-10">

@@ -14,7 +14,8 @@ async function ensureAdmin() {
 
 const formatObj = (doc: any) => {
   if (!doc) return doc;
-  const obj = typeof doc.toObject === 'function' ? doc.toObject() : doc;
+  const raw = typeof doc.toObject === 'function' ? doc.toObject() : doc;
+  const obj = JSON.parse(JSON.stringify(raw));
   obj.id = obj._id ? obj._id.toString() : obj.id;
   return obj;
 };
