@@ -106,6 +106,13 @@ const I18nContext = createContext<I18nContextProps | undefined>(undefined);
 export function LanguageProvider({ children, defaultLocale }: { children: React.ReactNode; defaultLocale?: Locale }) {
   const [locale, setLocale] = useState<Locale>(defaultLocale || "pt-pt");
 
+  // Synchronize locale state if defaultLocale prop changes
+  useEffect(() => {
+    if (defaultLocale) {
+      setLocale(defaultLocale);
+    }
+  }, [defaultLocale]);
+
   // Keep a client-side sync of locale settings if preferred (e.g. from local storage)
   useEffect(() => {
     if (typeof window !== "undefined" && !defaultLocale) {
