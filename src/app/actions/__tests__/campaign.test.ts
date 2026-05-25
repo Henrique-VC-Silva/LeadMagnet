@@ -1,10 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import path from "path";
 
 // Mock next-auth FIRST
 vi.mock("next-auth", () => ({
   default: vi.fn(),
   getServerSession: vi.fn(() => Promise.resolve({ user: { name: "Admin", role: "ADMIN" } })),
 }));
+
+// Mock fs/promises so we can assert unlink calls without touching disk
+const { mockUnlink } = vi.hoisted(() => ({ mockUnlink: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("fs/promises", () => ({ unlink: mockUnlink }));
 
 // Mock mongoose models
 vi.mock("@/lib/mongoose", () => {
@@ -113,5 +118,36 @@ describe("Campaign Actions - Mongoose CRUD", () => {
     expect(Prize.deleteMany).toHaveBeenCalledWith({ campaignId: "camp_1" });
     expect(Campaign.findByIdAndDelete).toHaveBeenCalledWith("camp_1");
     expect(result.id).toEqual("camp_1");
+  });
+
+  it("should delete campaign asset files (logo and backgroundImage) from disk", async () => {
+    const mockCampaign = {
+      _id: "camp_2",
+      name: "Asset Campaign",
+      slug: "asset-camp",
+      logo: "/uploads/ts_logo.png",
+      backgroundImage: "/uploads/ts_bg.jpg",
+    };
+    (Campaign.findByIdAndDelete as any).mockResolvedValue(mockCampaign);
+
+    await deleteCampaign("camp_2");
+
+    const uploadsDir = path.join(process.cwd(), "public");
+    expect(mockUnlink).toHaveBeenCalledWith(path.join(uploadsDir, "uploads", "ts_logo.png"));
+    expect(mockUnlink).toHaveBeenCalledWith(path.join(uploadsDir, "uploads", "ts_bg.jpg"));
+  });
+
+  it("should not throw when campaign has no asset files", async () => {
+    const mockCampaign = {
+      _id: "camp_3",
+      name: "No Assets",
+      slug: "no-assets",
+      logo: null,
+      backgroundImage: null,
+    };
+    (Campaign.findByIdAndDelete as any).mockResolvedValue(mockCampaign);
+
+    await expect(deleteCampaign("camp_3")).resolves.not.toThrow();
+    expect(mockUnlink).not.toHaveBeenCalled();
   });
 });

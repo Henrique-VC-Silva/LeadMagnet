@@ -4,6 +4,8 @@ import { Campaign, Prize, Lead } from "@/lib/mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
+import { unlink } from "fs/promises";
+import { join } from "path";
 
 async function ensureAdmin() {
   const session = await getServerSession(authOptions);
@@ -118,6 +120,25 @@ export async function deleteCampaign(id: string) {
   await Lead.deleteMany({ campaignId: id });
   await Prize.deleteMany({ campaignId: id });
   const deletedCampaign = await Campaign.findByIdAndDelete(id);
+
+  // Delete Campaign Asset files from the persistent volume
+  const assetPaths = [deletedCampaign?.logo, deletedCampaign?.backgroundImage]
+    .filter(Boolean) as string[];
+
+  await Promise.all(
+    assetPaths.map(async (relativePath) => {
+      // relativePath is like "/uploads/filename.png"
+      const filename = relativePath.replace(/^\/uploads\//, "");
+      const absPath = join(process.cwd(), "public", "uploads", filename);
+      try {
+        await unlink(absPath);
+      } catch (err: any) {
+        // File already gone — not an error worth surfacing
+        if (err?.code !== "ENOENT") throw err;
+      }
+    })
+  );
+
   revalidatePath("/admin");
   return formatObj(deletedCampaign);
 }
