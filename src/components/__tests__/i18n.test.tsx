@@ -39,4 +39,15 @@ describe("i18n Support", () => {
     expect(markup).toContain("ES");
     expect(markup).toContain("FR");
   });
+
+  it("should accept a defaultLocale prop and initialize with that locale", () => {
+    const markup = renderToStaticMarkup(
+      <LanguageProvider defaultLocale="en">
+        <TestComponent />
+      </LanguageProvider>
+    );
+
+    expect(markup).toContain("en");
+    expect(markup).toContain("Ready to Spin?");
+  });
 });

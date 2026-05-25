@@ -31,6 +31,7 @@ export async function createCampaign(data: {
   copySubtitle?: string;
   copyButton?: string;
   isActive?: boolean;
+  defaultLanguage?: string;
 }) {
   await ensureAdmin();
   const campaignDoc = await Campaign.create({
@@ -44,6 +45,7 @@ export async function createCampaign(data: {
     copySubtitle: data.copySubtitle || null,
     copyButton: data.copyButton || null,
     isActive: data.isActive !== undefined ? data.isActive : true,
+    defaultLanguage: data.defaultLanguage || "pt-pt",
   });
   revalidatePath("/admin");
   return formatObj(campaignDoc);
@@ -86,6 +88,7 @@ export async function updateCampaign(
     copySubtitle?: string;
     copyButton?: string;
     isActive?: boolean;
+    defaultLanguage?: string;
   }
 ) {
   await ensureAdmin();
@@ -102,6 +105,7 @@ export async function updateCampaign(
       copySubtitle: data.copySubtitle || null,
       copyButton: data.copyButton || null,
       ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
+      defaultLanguage: data.defaultLanguage || "pt-pt",
     },
     { new: true }
   );

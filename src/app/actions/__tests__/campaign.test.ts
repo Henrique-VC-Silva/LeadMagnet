@@ -58,6 +58,7 @@ describe("Campaign Actions - Mongoose CRUD", () => {
       slug: "black-friday",
       primaryColor: "#ff0000",
       secondaryColor: "#000000",
+      defaultLanguage: "fr",
     };
 
     const mockSaved = { _id: "camp_1", ...data, logo: null, toObject: () => ({ id: "camp_1", ...data, logo: null }) };
@@ -71,6 +72,7 @@ describe("Campaign Actions - Mongoose CRUD", () => {
         slug: "black-friday",
         primaryColor: "#ff0000",
         secondaryColor: "#000000",
+        defaultLanguage: "fr",
       })
     );
     expect(result.id).toEqual("camp_1");

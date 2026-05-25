@@ -26,6 +26,7 @@ export default function CreateCampaignForm({ onSuccess, onCancel }: CreateCampai
     copyTitle: "",
     copySubtitle: "",
     copyButton: "",
+    defaultLanguage: "pt-pt",
   });
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -302,6 +303,20 @@ export default function CreateCampaignForm({ onSuccess, onCancel }: CreateCampai
               className="w-full px-4 py-2 border border-slate-700 bg-slate-950 rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-slate-100"
               placeholder="Continue to Spin"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-slate-300">Base Language</label>
+            <select
+              value={formData.defaultLanguage}
+              onChange={(e) => setFormData({ ...formData, defaultLanguage: e.target.value })}
+              className="w-full px-4 py-2 border border-slate-700 bg-slate-950 rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-slate-100 cursor-pointer"
+            >
+              <option value="pt-pt">Português (pt-pt)</option>
+              <option value="en">English (en)</option>
+              <option value="es">Español (es)</option>
+              <option value="fr">Français (fr)</option>
+            </select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

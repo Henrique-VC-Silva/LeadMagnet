@@ -127,6 +127,7 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
           initialPrizes={prizes} 
           buttonText={copyButton} 
           copySuccess={settings["copy_success"]} 
+          defaultLanguage={campaign.defaultLanguage}
         />
       </div>
       

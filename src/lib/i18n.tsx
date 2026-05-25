@@ -103,18 +103,18 @@ interface I18nContextProps {
 
 const I18nContext = createContext<I18nContextProps | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("pt-pt");
+export function LanguageProvider({ children, defaultLocale }: { children: React.ReactNode; defaultLocale?: Locale }) {
+  const [locale, setLocale] = useState<Locale>(defaultLocale || "pt-pt");
 
   // Keep a client-side sync of locale settings if preferred (e.g. from local storage)
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && !defaultLocale) {
       const saved = localStorage.getItem("leadmagnet_locale") as Locale;
       if (saved && translations[saved]) {
         setLocale(saved);
       }
     }
-  }, []);
+  }, [defaultLocale]);
 
   const changeLocale = (newLocale: Locale) => {
     setLocale(newLocale);

@@ -31,6 +31,7 @@ export default function CampaignDetailsTabs({ campaign: initialCampaign }: Campa
     copySubtitle: campaign.copySubtitle || "",
     copyButton: campaign.copyButton || "",
     isActive: campaign.isActive !== false,
+    defaultLanguage: campaign.defaultLanguage || "pt-pt",
   });
   const router = useRouter();
 
@@ -368,6 +369,20 @@ export default function CampaignDetailsTabs({ campaign: initialCampaign }: Campa
                 className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-white bg-transparent"
                 placeholder="Continue to Spin"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Base Language</label>
+              <select
+                value={formData.defaultLanguage}
+                onChange={(e) => setFormData({ ...formData, defaultLanguage: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary/50 text-white bg-slate-900 cursor-pointer"
+              >
+                <option value="pt-pt">Português (pt-pt)</option>
+                <option value="en">English (en)</option>
+                <option value="es">Español (es)</option>
+                <option value="fr">Français (fr)</option>
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-6 pt-4 border-t border-border">

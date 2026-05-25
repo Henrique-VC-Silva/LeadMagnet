@@ -21,6 +21,7 @@ const CampaignSchema = new Schema({
   copySubtitle: { type: String, default: null },
   copyButton: { type: String, default: null },
   isActive: { type: Boolean, default: true },
+  defaultLanguage: { type: String, default: "pt-pt", enum: ["pt-pt", "en", "es", "fr"] },
 }, { timestamps: true });
 
 // 2. Prize Schema
@@ -69,6 +70,7 @@ export interface Campaign {
   copySubtitle: string | null;
   copyButton: string | null;
   isActive: boolean;
+  defaultLanguage: string;
   createdAt: Date;
   updatedAt: Date;
   prizes?: Prize[];

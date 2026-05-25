@@ -135,9 +135,10 @@ export default function GameContainer(props: {
   initialPrizes: Prize[];
   buttonText?: string;
   copySuccess?: string;
+  defaultLanguage?: string;
 }) {
   return (
-    <LanguageProvider>
+    <LanguageProvider defaultLocale={props.defaultLanguage as any}>
       <GameContainerInner {...props} />
     </LanguageProvider>
   );
