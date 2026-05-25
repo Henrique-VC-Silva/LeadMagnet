@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
 import LeadForm from "../LeadForm";
 import { renderToStaticMarkup } from "react-dom/server";
+import { LanguageProvider } from "@/lib/i18n";
 
 // Mock React's useEffect to run synchronously during server-side static rendering tests
 vi.mock("react", async (importOriginal) => {
@@ -46,5 +47,19 @@ describe("LeadForm Component", () => {
 
     // Expect the setValue hook was called during mount/effect with correct arguments
     expect(mockSetValue).toHaveBeenCalledWith("campaign", "test-campaign");
+  });
+
+  it("should render translations correctly based on active locale", () => {
+    const handleSuccess = vi.fn();
+    const markupDefault = renderToStaticMarkup(
+      <LanguageProvider>
+        <LeadForm campaignSlug="test-campaign" onSuccess={handleSuccess} />
+      </LanguageProvider>
+    );
+
+    // pt-pt is default
+    expect(markupDefault).toContain("Pronto para girar?");
+    expect(markupDefault).toContain("E-mail *");
+    expect(markupDefault).toContain("Nome (Opcional)");
   });
 });

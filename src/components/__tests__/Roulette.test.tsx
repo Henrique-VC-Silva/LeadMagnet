@@ -14,6 +14,15 @@ vi.mock("react", async (importOriginal) => {
   };
 });
 
+// Mock i18n
+vi.mock("@/lib/i18n", () => ({
+  useI18n: () => ({
+    locale: "pt-pt",
+    setLocale: vi.fn(),
+    t: (key: string) => key,
+  }),
+}));
+
 // Mock framer-motion to avoid DOM animations during tests
 vi.mock("framer-motion", () => ({
   motion: {

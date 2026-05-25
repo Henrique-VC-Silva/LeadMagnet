@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { Prize } from "@/lib/mongoose";
 import { MousePointer2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface RouletteProps {
   prizes: Prize[];
@@ -15,6 +16,7 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
   const controls = useAnimation();
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const { t } = useI18n();
 
   const TOTAL_SEGMENTS = 12;
   
@@ -142,7 +144,7 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
                 <div className="bg-white/90 p-4 rounded-full shadow-lg border border-primary/20 animate-bounce">
                   <MousePointer2 className="h-8 w-8 text-primary" />
                 </div>
-                <p className="mt-4 text-primary font-black tracking-widest text-sm bg-white/80 px-4 py-1 rounded-full border border-primary/10">TAP TO SPIN</p>
+                <p className="mt-4 text-primary font-black tracking-widest text-sm bg-white/80 px-4 py-1 rounded-full border border-primary/10">{t("tapToSpin")}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -173,7 +175,7 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
               exit={{ opacity: 0, y: -10 }}
               className="text-muted-foreground font-medium text-center"
             >
-              Your prize is ready! Click the wheel to find out what you won.
+              {t("prizeReady")}
             </motion.p>
           )}
 
@@ -185,7 +187,7 @@ export default function Roulette({ prizes, winningPrize, onFinish }: RoulettePro
               exit={{ opacity: 0, y: -10 }}
               className="text-xl font-medium text-primary animate-pulse text-center"
             >
-              Spinning for your prize...
+              {t("spinning")}
             </motion.p>
           )}
         </AnimatePresence>

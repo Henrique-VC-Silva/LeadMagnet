@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { leadSchema, LeadInput } from "@/lib/validations";
 import { createLead } from "@/app/actions/lead";
 import { Loader2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface LeadFormProps {
   campaignSlug: string;
@@ -16,6 +17,7 @@ interface LeadFormProps {
 export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const { t } = useI18n();
 
   const {
     register,
@@ -39,7 +41,7 @@ export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFo
     const result = await createLead(data);
 
     if (result.error) {
-      setServerError(typeof result.error === "string" ? result.error : "Validation failed");
+      setServerError(typeof result.error === "string" ? result.error : t("loading"));
       setIsPending(false);
     } else if (result.leadId) {
       onSuccess(result.leadId);
@@ -49,15 +51,15 @@ export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFo
   return (
     <div className="w-full max-w-md mx-auto p-5 sm:p-8 bg-white/90 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl">
       <h2 className="text-2xl font-semibold text-foreground mb-2 text-center">
-        Ready to Spin?
+        {t("readyToSpin")}
       </h2>
       <p className="text-muted-foreground text-sm mb-6 text-center">
-        Enter your details below to unlock your reward.
+        {t("enterDetails")}
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Email *</label>
+          <label className="block text-sm font-medium mb-1">{t("email")}</label>
           <input
             {...register("email")}
             type="email"
@@ -65,12 +67,12 @@ export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFo
             placeholder="you@example.com"
           />
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            <p className="text-red-500 text-xs mt-1">{t("validationEmail")}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Name (Optional)</label>
+          <label className="block text-sm font-medium mb-1">{t("nameOptional")}</label>
           <input
             {...register("name")}
             className="w-full px-4 py-3 bg-secondary/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -79,7 +81,7 @@ export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFo
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Phone (Optional)</label>
+          <label className="block text-sm font-medium mb-1">{t("phoneOptional")}</label>
           <input
             {...register("phone")}
             className="w-full px-4 py-3 bg-secondary/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -95,11 +97,11 @@ export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFo
             id="consent"
           />
           <label htmlFor="consent" className="text-xs text-muted-foreground leading-tight cursor-pointer select-none">
-            I agree to receive the prize and marketing materials via email. I can unsubscribe at any time.
+            {t("consentText")}
           </label>
         </div>
         {errors.consent && (
-          <p className="text-red-500 text-xs">{errors.consent.message}</p>
+          <p className="text-red-500 text-xs mt-1">{t("validationConsent")}</p>
         )}
 
         {serverError && (
@@ -114,7 +116,7 @@ export default function LeadForm({ campaignSlug, onSuccess, buttonText }: LeadFo
           className="w-full py-3.5 px-4 bg-primary text-primary-foreground font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
         >
           {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          {buttonText || "Continue to Spin"}
+          {buttonText || t("continueToSpin")}
         </button>
       </form>
     </div>

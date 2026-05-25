@@ -7,8 +7,10 @@ import { Prize } from "@/lib/mongoose";
 import { spinAction } from "@/app/actions/spin";
 import { motion, AnimatePresence } from "framer-motion";
 import { PartyPopper, RefreshCw } from "lucide-react";
+import { useI18n, LanguageProvider } from "@/lib/i18n";
+import { LanguageSelector } from "./LanguageSelector";
 
-export default function GameContainer({ 
+function GameContainerInner({ 
   campaignSlug,
   initialPrizes, 
   buttonText,
@@ -22,6 +24,7 @@ export default function GameContainer({
   const [step, setStep] = useState<"form" | "spin" | "result">("form");
   const [leadId, setLeadId] = useState<string | null>(null);
   const [winningPrize, setWinningPrize] = useState<Prize | null>(null);
+  const { t } = useI18n();
 
   const handleLeadSuccess = async (id: string) => {
     setLeadId(id);
@@ -45,6 +48,12 @@ export default function GameContainer({
 
   return (
     <div className="w-full flex flex-col items-center">
+      {step === "form" && (
+        <div className="w-full max-w-md flex justify-end mb-4 animate-in fade-in slide-in-from-top-1 duration-300">
+          <LanguageSelector />
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         {step === "form" && (
           <motion.div
@@ -53,7 +62,7 @@ export default function GameContainer({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading form...</div>}>
+            <Suspense fallback={<div className="h-64 flex items-center justify-center">{t("loading")}</div>}>
               <LeadForm campaignSlug={campaignSlug} onSuccess={handleLeadSuccess} buttonText={buttonText} />
             </Suspense>
           </motion.div>
@@ -87,30 +96,30 @@ export default function GameContainer({
             
             {winningPrize.isNoPrize ? (
               <>
-                <h2 className="text-2xl font-bold mb-2">So Close!</h2>
+                <h2 className="text-2xl font-bold mb-2">{t("soClose")}</h2>
                 <p className="text-muted-foreground mb-8">
-                  Unfortunately, you didn't win this time. But don't worry, you can try again!
+                  {t("noPrizeText")}
                 </p>
                 <button
                   onClick={handleReset}
                   className="flex items-center gap-2 mx-auto px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:opacity-90 cursor-pointer"
                 >
-                  <RefreshCw className="h-4 w-4" /> Try Again
+                  <RefreshCw className="h-4 w-4" /> {t("tryAgain")}
                 </button>
               </>
             ) : (
               <>
-                <h2 className="text-2xl font-bold mb-2">Congratulations!</h2>
-                <p className="text-muted-foreground mb-4">You've won:</p>
+                <h2 className="text-2xl font-bold mb-2">{t("congratulations")}</h2>
+                <p className="text-muted-foreground mb-4">{t("youWon")}</p>
                 <div className="text-3xl font-black text-primary mb-6">
                   {winningPrize.name}
                 </div>
                 <div className="p-4 bg-secondary rounded-lg mb-8">
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Your Code</p>
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">{t("yourCode")}</p>
                   <p className="text-xl font-mono font-bold tracking-tighter">{winningPrize.code}</p>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {copySuccess || "Check your email! We've sent your prize details to you."}
+                  {copySuccess || t("checkEmail")}
                 </p>
               </>
             )}
@@ -118,5 +127,18 @@ export default function GameContainer({
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function GameContainer(props: {
+  campaignSlug: string;
+  initialPrizes: Prize[];
+  buttonText?: string;
+  copySuccess?: string;
+}) {
+  return (
+    <LanguageProvider>
+      <GameContainerInner {...props} />
+    </LanguageProvider>
   );
 }
