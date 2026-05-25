@@ -40,3 +40,5 @@ Dynamic text elements (e.g., title, subtitle, button text) stored in the databas
 ### Campaign
 A core structural marketing entity that isolates styling themes (custom color palettes and background images), associated Prizes, and captured Leads for a specific marketing effort or version of the Roulette.
 
+### Campaign Asset
+An image file (logo or background image) uploaded by an Admin and associated with a Campaign. Campaign Assets are stored on a persistent named volume so they survive container redeployments.
