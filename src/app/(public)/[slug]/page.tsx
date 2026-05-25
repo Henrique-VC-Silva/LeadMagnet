@@ -83,9 +83,10 @@ export default async function CampaignPage({ params }: CampaignPageProps) {
   }
 
   // Filter campaign prizes to only display in-stock items or "no prize" slots
-  const prizes = campaign.prizes.filter(
-    (prize) => prize.stock > 0 || prize.isNoPrize
+  const prizesRaw = campaign.prizes.filter(
+    (prize: any) => prize.stock > 0 || prize.isNoPrize
   );
+  const prizes = JSON.parse(JSON.stringify(prizesRaw));
 
   const copyTitle = campaign.copyTitle || settings["copy_title"] || "Spin to Win Your Exclusive Prize";
   const copySubtitle = campaign.copySubtitle || settings["copy_subtitle"] || "Join our community and try your luck. Everyone wins something!";
