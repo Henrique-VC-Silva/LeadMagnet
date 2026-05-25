@@ -11,7 +11,7 @@ services:
       - uploads_data:/app/public/uploads
 
   db:
-    image: mongo:6-jammy
+    image: mongo:8
     container_name: leadmagnet-db
     restart: always
     ports:
