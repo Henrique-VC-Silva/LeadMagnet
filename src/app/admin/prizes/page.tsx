@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Plus } from "lucide-react";
 
 export default async function AdminPrizesPage() {
-  const prizes = await getPrizes();
+  const prizes = JSON.parse(JSON.stringify(await getPrizes()));
 
   return (
     <div className="p-8 max-w-6xl mx-auto">

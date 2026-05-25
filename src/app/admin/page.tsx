@@ -77,7 +77,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="border-t border-border pt-8">
-        <CampaignList initialCampaigns={campaigns} />
+        <CampaignList initialCampaigns={JSON.parse(JSON.stringify(campaigns))} />
       </div>
     </div>
   );
