@@ -30,7 +30,7 @@ export async function saveSettings(data: Record<string, string>) {
     Setting.findOneAndUpdate(
       { key },
       { value },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     )
   );
 

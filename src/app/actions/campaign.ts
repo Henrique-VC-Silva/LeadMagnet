@@ -109,7 +109,7 @@ export async function updateCampaign(
       ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
       defaultLanguage: data.defaultLanguage || "pt-pt",
     },
-    { new: true }
+    { returnDocument: 'after' }
   );
   revalidatePath("/admin");
   return formatObj(campaignDoc);

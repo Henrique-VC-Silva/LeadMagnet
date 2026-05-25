@@ -52,7 +52,7 @@ export async function updatePrize(
   }>
 ) {
   await ensureAdmin();
-  const prizeDoc = await Prize.findByIdAndUpdate(id, data, { new: true });
+  const prizeDoc = await Prize.findByIdAndUpdate(id, data, { returnDocument: 'after' });
   revalidatePath("/admin");
   return formatObj(prizeDoc);
 }

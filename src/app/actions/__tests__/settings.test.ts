@@ -43,7 +43,7 @@ describe("Settings Actions - Mongoose Persistence", () => {
     expect(Setting.findOneAndUpdate).toHaveBeenCalledWith(
       { key: "theme_primary_color" },
       { value: "#ff0000" },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
   });
 });
