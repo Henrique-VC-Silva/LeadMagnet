@@ -11,3 +11,9 @@ Default label vocabulary (`needs-triage`, `ready-for-agent`, etc.). See `docs/ag
 ### Domain docs
 
 Single-context layout. See `docs/agents/domain.md`.
+
+## Repository rules
+
+### Session Startup
+
+When starting a new session in a Git repository, always start by running `git pull` to ensure the repository is fully up-to-date.
